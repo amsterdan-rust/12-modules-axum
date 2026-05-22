@@ -9,6 +9,7 @@ async fn main() {
     let app = Router::new()
         .route("/", get(home))
         .route("/health", get(health))
+        .route("/version", get(version))
         .route("/created", get(created))
         .route("/status", get(status))
         .route("/echo", post(echo));
@@ -24,22 +25,22 @@ async fn main() {
         .expect("erro ao iniciar o servidor");
 }
 
+// curl http://localhost:8000
 async fn home() -> &'static str {
     "Hello, Axum!"
 }
 
+// curl http://localhost:8000/health
 async fn health() -> &'static str {
     "OK"
 }
 
-async fn echo(body: String) -> String {
-    format!("Você enviou: {body}")
-}
-
+// curl -i http://localhost:8000/created
 async fn created() -> (StatusCode, &'static str) {
     (StatusCode::CREATED, "Recurso criado")
 }
 
+// curl -i http://localhost:8000/status
 async fn status() -> (StatusCode, &'static str) {
     let service_is_ok = true;
 
@@ -48,4 +49,14 @@ async fn status() -> (StatusCode, &'static str) {
     } else {
         (StatusCode::SERVICE_UNAVAILABLE, "Serviço indisponível")
     }
+}
+
+// curl -X POST -d "Aprendendo Axum" http://localhost:8000/echo
+async fn echo(body: String) -> String {
+    format!("Você enviou: {body}")
+}
+
+// curl http://localhost:8000/version
+async fn version() -> String {
+    format!("Versão da aplicação: {}", env!("CARGO_PKG_VERSION"))
 }
