@@ -35,6 +35,7 @@ fn app() -> Router {
         )
         .route("/items", get(list_items))
         .route("/search", get(search))
+        .route("/files/{*path}", get(read_file))
 }
 
 // curl http://localhost:8000
@@ -126,4 +127,10 @@ async fn search(Query(params): Query<SearchParams>) -> String {
         "Buscando por '{}' na categoria '{}', ordenado por '{}'",
         params.q, category, sort
     )
+}
+
+// curl http://localhost:8000/files/readme.md
+// curl http://localhost:8000/files/docs/rust/axum.md
+async fn read_file(Path(path): Path<String>) -> String {
+    format!("Acessando arquivo: {path}")
 }
