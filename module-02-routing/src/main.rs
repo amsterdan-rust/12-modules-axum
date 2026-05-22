@@ -4,6 +4,7 @@ mod user;
 use axum::{
     Router,
     extract::{Path, Query},
+    http::StatusCode,
     routing::{delete, get, patch, post, put},
 };
 use serde::Deserialize;
@@ -43,6 +44,7 @@ fn app() -> Router {
         .route("/files/{*path}", get(read_file))
         .nest("/api/v1", api_v1_routes())
         .nest("/api/v2", api_v2_routes())
+        .fallback(not_found)
 }
 
 fn api_v1_routes() -> Router {
@@ -162,4 +164,9 @@ async fn search(Query(params): Query<SearchParams>) -> String {
 // curl http://localhost:8000/files/docs/rust/axum.md
 async fn read_file(Path(path): Path<String>) -> String {
     format!("Acessando arquivo: {path}")
+}
+
+// curl -i http://localhost:8000/rota-que-nao-existe
+async fn not_found() -> (StatusCode, &'static str) {
+    (StatusCode::NOT_FOUND, "404 - rota não encontrada")
 }
