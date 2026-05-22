@@ -3,6 +3,7 @@ use axum::{
     extract::Path,
     routing::{delete, get, patch, post, put},
 };
+use serde::Deserialize;
 
 #[tokio::main]
 async fn main() {
@@ -28,6 +29,10 @@ fn app() -> Router {
         .route("/resource/{id}", patch(patch_resource))
         .route("/resource/{id}", delete(delete_resource))
         .route("/users/{user_id}/posts/{post_id}", get(read_user_post))
+        .route(
+            "/users/{user_id}/posts/{post_id}/comments/{comment_id}",
+            get(read_comment),
+        )
 }
 
 // curl http://localhost:8000
@@ -68,4 +73,19 @@ async fn delete_resource(Path(id): Path<u64>) -> String {
 // curl http://localhost:8000/users/7/posts/99
 async fn read_user_post(Path((user_id, post_id)): Path<(u64, u64)>) -> String {
     format!("Usuário {user_id} - Post {post_id}")
+}
+
+#[derive(Deserialize)]
+struct CommentPath {
+    user_id: u64,
+    post_id: u64,
+    comment_id: u64,
+}
+
+// curl http://localhost:8000/users/7/posts/99/comments/3
+async fn read_comment(Path(params): Path<CommentPath>) -> String {
+    format!(
+        "Usuário {} - Post {} - Comentário {}",
+        params.user_id, params.post_id, params.comment_id,
+    )
 }
