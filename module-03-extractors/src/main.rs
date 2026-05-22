@@ -1,6 +1,7 @@
 use axum::{
     Json, Router,
     extract::{Path, Query},
+    http::HeaderMap,
     routing::get,
 };
 use serde::{Deserialize, Serialize};
@@ -24,6 +25,7 @@ fn app() -> Router {
         .route("/", get(home))
         .route("/users/{id}", get(get_user))
         .route("/users", get(list_users).post(create_user))
+        .route("/headers", get(show_headers))
 }
 
 #[derive(Debug, Deserialize)]
@@ -76,4 +78,23 @@ async fn create_user(Json(payload): Json<CreateUserRequest>) -> Json<CreateUserR
         name: payload.name,
         email: payload.email,
     })
+}
+
+// curl -w "\n\n" http://localhost:8000/headers
+// curl -w "\n\n" http://localhost:8000/headers \
+//   -H "User-Agent: Meu Cliente Rust"
+// curl -w "\n\n" http://localhost:8000/headers \
+//   -H "Content-Type: application/json"
+async fn show_headers(headers: HeaderMap) -> String {
+    let user_agent = headers
+        .get("user-agent")
+        .and_then(|value| value.to_str().ok())
+        .unwrap_or("desconhecido");
+
+    let content_type = headers
+        .get("content-type")
+        .and_then(|value| value.to_str().ok())
+        .unwrap_or("não informado");
+
+    format!("User-Agent: {user_agent}\nContent-Type: {content_type}")
 }
