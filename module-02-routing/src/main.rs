@@ -41,8 +41,13 @@ fn app() -> Router {
         .route("/items", get(list_items))
         .route("/search", get(search))
         .route("/files/{*path}", get(read_file))
-        .nest("/api/users", user_routes())
-        .nest("/api/posts", post_routes())
+        .nest("/api/v1", api_v1_routes())
+}
+
+fn api_v1_routes() -> Router {
+    Router::new()
+        .nest("/users", user_routes())
+        .nest("/posts", post_routes())
 }
 
 // curl http://localhost:8000
