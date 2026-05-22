@@ -4,3 +4,6 @@ c01 = "check -p module-01-intro"
 
 c02 = "check -p module-02-routing"
 r02 = "run -p module-02-routing"
+
+c03 = "check -p module-03-extractors"
+r03 = "run -p module-03-extractors"

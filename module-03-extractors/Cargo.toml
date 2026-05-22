@@ -1,0 +1,9 @@
+[package]
+name = "module-03-extractors"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+axum.workspace = true
+tokio.workspace = true
+serde.workspace = true
