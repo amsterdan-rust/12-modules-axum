@@ -1,9 +1,13 @@
+mod user;
+
 use axum::{
     Router,
     extract::{Path, Query},
     routing::{delete, get, patch, post, put},
 };
 use serde::Deserialize;
+
+use crate::user::user_routes;
 
 #[tokio::main]
 async fn main() {
@@ -36,6 +40,7 @@ fn app() -> Router {
         .route("/items", get(list_items))
         .route("/search", get(search))
         .route("/files/{*path}", get(read_file))
+        .nest("/api/users", user_routes())
 }
 
 // curl http://localhost:8000
