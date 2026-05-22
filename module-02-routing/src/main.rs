@@ -34,6 +34,7 @@ fn app() -> Router {
             get(read_comment),
         )
         .route("/items", get(list_items))
+        .route("/search", get(search))
 }
 
 // curl http://localhost:8000
@@ -105,4 +106,24 @@ async fn list_items(Query(pagination): Query<Pagination>) -> String {
     let limit = pagination.limit.unwrap_or(10);
 
     format!("Listando itens - página {page}, limite {limit}")
+}
+
+#[derive(Deserialize)]
+struct SearchParams {
+    q: String,
+    category: Option<String>,
+    sort: Option<String>,
+}
+
+// curl "http://localhost:8000/search?q=rust"
+// curl "http://localhost:8000/search?q=rust&category=backend"
+// curl "http://localhost:8000/search?q=rust&category=backend&sort=recent"
+async fn search(Query(params): Query<SearchParams>) -> String {
+    let category = params.category.unwrap_or_else(|| "all".to_string());
+    let sort = params.sort.unwrap_or_else(|| "relevance".to_string());
+
+    format!(
+        "Buscando por '{}' na categoria '{}', ordenado por '{}'",
+        params.q, category, sort
+    )
 }
