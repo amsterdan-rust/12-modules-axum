@@ -1,5 +1,6 @@
 use axum::{
     Router,
+    http::StatusCode,
     routing::{get, post},
 };
 
@@ -8,6 +9,8 @@ async fn main() {
     let app = Router::new()
         .route("/", get(home))
         .route("/health", get(health))
+        .route("/created", get(created))
+        .route("/status", get(status))
         .route("/echo", post(echo));
 
     let listener = tokio::net::TcpListener::bind("0.0.0.0:8000")
@@ -31,4 +34,18 @@ async fn health() -> &'static str {
 
 async fn echo(body: String) -> String {
     format!("Você enviou: {body}")
+}
+
+async fn created() -> (StatusCode, &'static str) {
+    (StatusCode::CREATED, "Recurso criado")
+}
+
+async fn status() -> (StatusCode, &'static str) {
+    let service_is_ok = true;
+
+    if service_is_ok {
+        (StatusCode::OK, "Serviço funcionando")
+    } else {
+        (StatusCode::SERVICE_UNAVAILABLE, "Serviço indisponível")
+    }
 }
