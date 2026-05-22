@@ -42,12 +42,29 @@ fn app() -> Router {
         .route("/search", get(search))
         .route("/files/{*path}", get(read_file))
         .nest("/api/v1", api_v1_routes())
+        .nest("/api/v2", api_v2_routes())
 }
 
 fn api_v1_routes() -> Router {
     Router::new()
         .nest("/users", user_routes())
         .nest("/posts", post_routes())
+}
+
+fn api_v2_routes() -> Router {
+    Router::new()
+        .route("/users", get(api_v2_users))
+        .route("/posts", get(api_v2_posts))
+}
+
+// curl http://localhost:8000/api/v2/users
+async fn api_v2_users() -> &'static str {
+    "API v2 - endpoint de usuários"
+}
+
+// curl http://localhost:8000/api/v2/posts
+async fn api_v2_posts() -> &'static str {
+    "API v2 - endpoint de posts"
 }
 
 // curl http://localhost:8000
