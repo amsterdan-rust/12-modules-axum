@@ -1,9 +1,9 @@
 use axum::{
-    Router,
+    Json, Router,
     extract::{Path, Query},
     routing::get,
 };
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
 #[tokio::main]
 async fn main() {
@@ -23,7 +23,7 @@ fn app() -> Router {
     Router::new()
         .route("/", get(home))
         .route("/users/{id}", get(get_user))
-        .route("/users", get(list_users))
+        .route("/users", get(list_users).post(create_user))
 }
 
 #[derive(Debug, Deserialize)]
@@ -52,4 +52,28 @@ async fn list_users(Query(params): Query<ListUsersParams>) -> String {
     let sort = params.sort.unwrap_or_else(|| "id".to_string());
 
     format!("Listando usuários - página {page}, limite {limit}, ordenação {sort}")
+}
+
+#[derive(Debug, Deserialize)]
+struct CreateUserRequest {
+    name: String,
+    email: String,
+}
+
+#[derive(Debug, Serialize)]
+struct CreateUserResponse {
+    id: u64,
+    name: String,
+    email: String,
+}
+
+// curl -X POST http://localhost:8000/users \
+//   -H "Content-Type: application/json" \
+//   -d '{"name":"Ana","email":"ana@example.com"}'
+async fn create_user(Json(payload): Json<CreateUserRequest>) -> Json<CreateUserResponse> {
+    Json(CreateUserResponse {
+        id: 1,
+        name: payload.name,
+        email: payload.email,
+    })
 }
