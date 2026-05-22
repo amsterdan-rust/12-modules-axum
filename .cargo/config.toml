@@ -1,0 +1,3 @@
+[alias]
+r01 = "run -p module-01-intro"
+c01 = "check -p module-01-intro"
