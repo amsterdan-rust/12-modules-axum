@@ -1,3 +1,6 @@
 [alias]
 r01 = "run -p module-01-intro"
 c01 = "check -p module-01-intro"
+
+c02 = "check -p module-02-routing"
+r02 = "run -p module-02-routing"

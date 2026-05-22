@@ -1,0 +1,9 @@
+[package]
+name = "module-02-routing"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+axum.workspace = true
+tokio.workspace = true
+serde.workspace = true
