@@ -5,3 +5,7 @@ members = ["module-01-intro"]
 [workspace.package]
 version = "0.1.0"
 edition = "2024"
+
+[workspace.dependencies]
+axum = "0.8.9"
+tokio = { version = "1", features = ["rt-multi-thread"] }
