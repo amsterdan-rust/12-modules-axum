@@ -1,6 +1,6 @@
 use axum::{
     Router,
-    extract::Path,
+    extract::{Path, Query},
     routing::{delete, get, patch, post, put},
 };
 use serde::Deserialize;
@@ -33,6 +33,7 @@ fn app() -> Router {
             "/users/{user_id}/posts/{post_id}/comments/{comment_id}",
             get(read_comment),
         )
+        .route("/items", get(list_items))
 }
 
 // curl http://localhost:8000
@@ -88,4 +89,20 @@ async fn read_comment(Path(params): Path<CommentPath>) -> String {
         "Usuário {} - Post {} - Comentário {}",
         params.user_id, params.post_id, params.comment_id,
     )
+}
+
+#[derive(Deserialize)]
+struct Pagination {
+    page: Option<u32>,
+    limit: Option<u32>,
+}
+
+// curl "http://localhost:8000/items"
+// curl "http://localhost:8000/items?page=2"
+// curl "http://localhost:8000/items?page=2&limit=20"
+async fn list_items(Query(pagination): Query<Pagination>) -> String {
+    let page = pagination.page.unwrap_or(1);
+    let limit = pagination.limit.unwrap_or(10);
+
+    format!("Listando itens - página {page}, limite {limit}")
 }
