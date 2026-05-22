@@ -27,6 +27,7 @@ fn app() -> Router {
         .route("/resource/{id}", put(update_resource))
         .route("/resource/{id}", patch(patch_resource))
         .route("/resource/{id}", delete(delete_resource))
+        .route("/users/{user_id}/posts/{post_id}", get(read_user_post))
 }
 
 // curl http://localhost:8000
@@ -62,4 +63,9 @@ async fn patch_resource(Path(id): Path<u64>) -> String {
 // curl -X DELETE http://localhost:8000/resource/10
 async fn delete_resource(Path(id): Path<u64>) -> String {
     format!("DELETE - remover recurso {id}")
+}
+
+// curl http://localhost:8000/users/7/posts/99
+async fn read_user_post(Path((user_id, post_id)): Path<(u64, u64)>) -> String {
+    format!("Usuário {user_id} - Post {post_id}")
 }
