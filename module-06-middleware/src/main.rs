@@ -75,15 +75,21 @@ fn protected_routes() -> Router {
         .route_layer(middleware::from_fn(auth_middleware))
 }
 
-fn app() -> Router {
+fn public_routes() -> Router {
     Router::new()
         // Testes:
         //
         // curl -w '\n\n' http://localhost:8000/
         // curl -w '\n\n' http://localhost:8000/public
+        // curl -i -w '\n\n' http://localhost:8000/slow
         .route("/", get(index))
         .route("/public", get(public_data))
         .route("/slow", get(slow_endpoint))
+}
+
+fn app() -> Router {
+    Router::new()
+        .merge(public_routes())
         .nest("/protected", protected_routes())
         .layer(middleware::from_fn(timing_middleware))
         .layer(middleware::from_fn(logging_middleware))
