@@ -1,4 +1,9 @@
-use axum::{Json, Router, http::StatusCode, response::Html, routing::get};
+use axum::{
+    Json, Router,
+    http::{HeaderMap, HeaderValue, StatusCode, header},
+    response::Html,
+    routing::get,
+};
 use serde::Serialize;
 
 #[tokio::main]
@@ -26,6 +31,8 @@ fn app() -> Router {
         .route("/json/users", get(json_users))
         .route("/html", get(html_page))
         .route("/html/dynamic", get(dynamic_html))
+        .route("/headers", get(with_headers))
+        .route("/full", get(full_response))
 }
 
 // curl -w '\n\n' 'http://localhost:8000'
@@ -166,4 +173,45 @@ async fn dynamic_html() -> Html<String> {
         </html>
         "#
     ))
+}
+
+// curl -i 'http://localhost:8000/headers'
+//
+// echo
+async fn with_headers() -> (HeaderMap, &'static str) {
+    let mut headers = HeaderMap::new();
+
+    headers.insert(
+        header::CONTENT_TYPE,
+        HeaderValue::from_static("text/plain; charset=utf-8"),
+    );
+
+    headers.insert(
+        header::CACHE_CONTROL,
+        HeaderValue::from_static("max-age=3600"),
+    );
+
+    headers.insert("x-module", HeaderValue::from_static("module-04-responses"));
+
+    (headers, "Resposta com headers customizados")
+}
+
+// curl -i 'http://localhost:8000/full'
+//
+// echo
+async fn full_response() -> (StatusCode, HeaderMap, &'static str) {
+    let mut headers = HeaderMap::new();
+
+    headers.insert(
+        header::CONTENT_TYPE,
+        HeaderValue::from_static("text/plain; charset=utf-8"),
+    );
+
+    headers.insert("x-request-id", HeaderValue::from_static("req-123"));
+
+    (
+        StatusCode::OK,
+        headers,
+        "Resposta com status, headers e body",
+    )
 }
