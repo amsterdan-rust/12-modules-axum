@@ -30,21 +30,23 @@ enum AppError {
 struct ErrorResponse {
     error: String,
     code: u16,
+    kind: &'static str,
 }
 
 impl IntoResponse for AppError {
     fn into_response(self) -> Response {
-        let status = match &self {
-            AppError::UserNotFound(_) => StatusCode::NOT_FOUND,
-            AppError::InvalidInput(_) => StatusCode::BAD_REQUEST,
-            AppError::Unauthorized => StatusCode::UNAUTHORIZED,
-            AppError::DatabaseError(_) => StatusCode::INTERNAL_SERVER_ERROR,
-            AppError::Internal => StatusCode::INTERNAL_SERVER_ERROR,
+        let (status, kind) = match &self {
+            AppError::UserNotFound(_) => (StatusCode::NOT_FOUND, "not_found"),
+            AppError::InvalidInput(_) => (StatusCode::BAD_REQUEST, "invalid_input"),
+            AppError::Unauthorized => (StatusCode::UNAUTHORIZED, "unauthorized"),
+            AppError::DatabaseError(_) => (StatusCode::INTERNAL_SERVER_ERROR, "database_error"),
+            AppError::Internal => (StatusCode::INTERNAL_SERVER_ERROR, "internal_error"),
         };
 
         let body = ErrorResponse {
             error: self.to_string(),
             code: status.as_u16(),
+            kind,
         };
 
         (status, Json(body)).into_response()
