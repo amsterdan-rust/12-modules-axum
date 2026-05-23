@@ -1,7 +1,7 @@
 use axum::{
     Json, Router,
     http::{HeaderMap, HeaderValue, StatusCode, header},
-    response::Html,
+    response::{Html, Redirect},
     routing::get,
 };
 use serde::Serialize;
@@ -33,6 +33,12 @@ fn app() -> Router {
         .route("/html/dynamic", get(dynamic_html))
         .route("/headers", get(with_headers))
         .route("/full", get(full_response))
+        .route("/redirect/permanent", get(redirect_permanent))
+        .route("/redirect/temporary", get(redirect_temporary))
+        .route("/redirect/after-post", get(redirect_after_post))
+        .route("/new-location", get(new_location))
+        .route("/temporary-location", get(temporary_location))
+        .route("/success", get(success))
 }
 
 // curl -w '\n\n' 'http://localhost:8000'
@@ -214,4 +220,40 @@ async fn full_response() -> (StatusCode, HeaderMap, &'static str) {
         headers,
         "Resposta com status, headers e body",
     )
+}
+
+// curl -i 'http://localhost:8000/redirect/permanent'
+//
+// echo
+async fn redirect_permanent() -> Redirect {
+    Redirect::permanent("/new-location")
+}
+
+// curl -i 'http://localhost:8000/redirect/temporary'
+//
+// echo
+async fn redirect_temporary() -> Redirect {
+    Redirect::temporary("/temporary-location")
+}
+
+// curl -i 'http://localhost:8000/redirect/after-post'
+//
+// echo
+async fn redirect_after_post() -> Redirect {
+    Redirect::to("/success")
+}
+
+// curl -w '\n\n' 'http://localhost:8000/new-location'
+async fn new_location() -> &'static str {
+    "Você chegou na nova localização permanente"
+}
+
+// curl -w '\n\n' 'http://localhost:8000/temporary-location'
+async fn temporary_location() -> &'static str {
+    "Você chegou na localização temporária"
+}
+
+// curl -w '\n\n' 'http://localhost:8000/success'
+async fn success() -> &'static str {
+    "Operação concluída com sucesso"
 }
