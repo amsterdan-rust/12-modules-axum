@@ -1,4 +1,4 @@
-use axum::{Json, Router, http::StatusCode, routing::get};
+use axum::{Json, Router, http::StatusCode, response::Html, routing::get};
 use serde::Serialize;
 
 #[tokio::main]
@@ -24,6 +24,8 @@ fn app() -> Router {
         .route("/json/user", get(json_user))
         .route("/json/created", get(json_created_user))
         .route("/json/users", get(json_users))
+        .route("/html", get(html_page))
+        .route("/html/dynamic", get(dynamic_html))
 }
 
 // curl -w '\n\n' 'http://localhost:8000'
@@ -119,4 +121,49 @@ async fn json_users() -> Json<UsersResponse> {
         users,
         page: 1,
     })
+}
+
+// curl -w '\n\n' 'http://localhost:8000/html'
+async fn html_page() -> Html<&'static str> {
+    Html(
+        r#"
+        <!DOCTYPE html>
+        <html lang="pt-BR">
+        <head>
+            <meta charset="UTF-8">
+            <title>Axum HTML</title>
+        </head>
+        <body>
+            <h1>Resposta HTML com Axum</h1>
+            <p>Essa página veio diretamente de um handler.</p>
+        </body>
+        </html>
+        "#,
+    )
+}
+
+// curl -w '\n\n' 'http://localhost:8000/html/dynamic'
+async fn dynamic_html() -> Html<String> {
+    let topics = ["Routing", "Extractors", "Responses"];
+
+    let items: String = topics
+        .iter()
+        .map(|topic| format!("<li>{topic}</li>"))
+        .collect();
+
+    Html(format!(
+        r#"
+        <!DOCTYPE html>
+        <html lang="pt-BR">
+        <head>
+            <meta charset="UTF-8">
+            <title>Módulos Axum</title>
+        </head>
+        <body>
+            <h1>Módulos estudados</h1>
+            <ul>{items}</ul>
+        </body>
+        </html>
+        "#
+    ))
 }
