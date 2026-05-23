@@ -1,6 +1,6 @@
 [workspace]
 resolver = "3"
-members = ["module-01-intro", "module-02-routing", "module-03-extractors", "module-04-responses", "module-05-state", "module-06-middleware"]
+members = ["module-01-intro", "module-02-routing", "module-03-extractors", "module-04-responses", "module-05-state", "module-06-middleware", "module-07-errors"]
 
 [workspace.package]
 version = "0.1.0"
@@ -18,3 +18,5 @@ tracing = "0.1"
 tracing-subscriber = "0.3"
 tower = "0.5"
 tower-http = { version = "0.6", features = ["trace", "cors", "compression-full"] }
+# add mod 07
+thiserror = "2"

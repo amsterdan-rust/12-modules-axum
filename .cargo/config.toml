@@ -16,3 +16,6 @@ r05 = "run -p module-05-state"
 
 c06 = "check -p module-06-middleware"
 r06 = "run -p module-06-middleware"
+
+c07 = "check -p module-07-errors"
+r07 = "run -p module-07-errors"
