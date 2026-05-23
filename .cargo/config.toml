@@ -10,3 +10,6 @@ r03 = "run -p module-03-extractors"
 
 c04 = "check -p module-04-responses"
 r04 = "run -p module-04-responses"
+
+c05 = "check -p module-05-state"
+r05 = "run -p module-05-state"
