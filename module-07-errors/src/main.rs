@@ -1,9 +1,9 @@
 use axum::{
+    Json, Router,
     extract::Path,
     http::StatusCode,
     response::{IntoResponse, Response},
     routing::get,
-    Json, Router,
 };
 use serde::Serialize;
 use thiserror::Error;
@@ -12,6 +12,18 @@ use thiserror::Error;
 enum AppError {
     #[error("User not found: {0}")]
     UserNotFound(u64),
+
+    #[error("Invalid input: {0}")]
+    InvalidInput(String),
+
+    #[error("Unauthorized")]
+    Unauthorized,
+
+    #[error("Database error: {0}")]
+    DatabaseError(String),
+
+    #[error("Internal server error")]
+    Internal,
 }
 
 #[derive(Serialize)]
@@ -22,8 +34,12 @@ struct ErrorResponse {
 
 impl IntoResponse for AppError {
     fn into_response(self) -> Response {
-        let status = match self {
+        let status = match &self {
             AppError::UserNotFound(_) => StatusCode::NOT_FOUND,
+            AppError::InvalidInput(_) => StatusCode::BAD_REQUEST,
+            AppError::Unauthorized => StatusCode::UNAUTHORIZED,
+            AppError::DatabaseError(_) => StatusCode::INTERNAL_SERVER_ERROR,
+            AppError::Internal => StatusCode::INTERNAL_SERVER_ERROR,
         };
 
         let body = ErrorResponse {
@@ -55,6 +71,30 @@ async fn get_user(Path(id): Path<u64>) -> Result<Json<User>, AppError> {
     }
 }
 
+async fn validate_input(Path(value): Path<String>) -> Result<String, AppError> {
+    if value.len() < 3 {
+        return Err(AppError::InvalidInput(
+            "Value must be at least 3 characters".to_string(),
+        ));
+    }
+
+    Ok(format!("Valid input: {value}"))
+}
+
+async fn protected_resource() -> Result<&'static str, AppError> {
+    let is_authenticated = false;
+
+    if !is_authenticated {
+        return Err(AppError::Unauthorized);
+    }
+
+    Ok("Secret data!")
+}
+
+async fn database_operation() -> Result<&'static str, AppError> {
+    Err(AppError::DatabaseError("Connection timeout".to_string()))
+}
+
 fn app() -> Router {
     Router::new()
         // Testes:
@@ -63,6 +103,19 @@ fn app() -> Router {
         // curl -i -w '\n\n' http://localhost:8000/users/2
         // curl -i -w '\n\n' http://localhost:8000/users/999
         .route("/users/{id}", get(get_user))
+        // Testes:
+        //
+        // curl -i -w '\n\n' http://localhost:8000/validate/abc
+        // curl -i -w '\n\n' http://localhost:8000/validate/ab
+        .route("/validate/{value}", get(validate_input))
+        // Teste:
+        //
+        // curl -i -w '\n\n' http://localhost:8000/protected
+        .route("/protected", get(protected_resource))
+        // Teste:
+        //
+        // curl -i -w '\n\n' http://localhost:8000/database
+        .route("/database", get(database_operation))
 }
 
 #[tokio::main]
