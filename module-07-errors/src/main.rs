@@ -26,6 +26,28 @@ enum AppError {
     Internal,
 }
 
+impl AppError {
+    fn status_code(&self) -> StatusCode {
+        match self {
+            AppError::UserNotFound(_) => StatusCode::NOT_FOUND,
+            AppError::InvalidInput(_) => StatusCode::BAD_REQUEST,
+            AppError::Unauthorized => StatusCode::UNAUTHORIZED,
+            AppError::DatabaseError(_) => StatusCode::INTERNAL_SERVER_ERROR,
+            AppError::Internal => StatusCode::INTERNAL_SERVER_ERROR,
+        }
+    }
+
+    fn kind(&self) -> &'static str {
+        match self {
+            AppError::UserNotFound(_) => "not_found",
+            AppError::InvalidInput(_) => "invalid_input",
+            AppError::Unauthorized => "unauthorized",
+            AppError::DatabaseError(_) => "database_error",
+            AppError::Internal => "internal_error",
+        }
+    }
+}
+
 #[derive(Serialize)]
 struct ErrorResponse {
     error: String,
@@ -35,18 +57,12 @@ struct ErrorResponse {
 
 impl IntoResponse for AppError {
     fn into_response(self) -> Response {
-        let (status, kind) = match &self {
-            AppError::UserNotFound(_) => (StatusCode::NOT_FOUND, "not_found"),
-            AppError::InvalidInput(_) => (StatusCode::BAD_REQUEST, "invalid_input"),
-            AppError::Unauthorized => (StatusCode::UNAUTHORIZED, "unauthorized"),
-            AppError::DatabaseError(_) => (StatusCode::INTERNAL_SERVER_ERROR, "database_error"),
-            AppError::Internal => (StatusCode::INTERNAL_SERVER_ERROR, "internal_error"),
-        };
+        let status = self.status_code();
 
         let body = ErrorResponse {
             error: self.to_string(),
             code: status.as_u16(),
-            kind,
+            kind: self.kind(),
         };
 
         (status, Json(body)).into_response()
