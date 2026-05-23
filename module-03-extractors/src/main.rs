@@ -1,8 +1,9 @@
 use axum::{
     Json, Router,
+    body::Bytes,
     extract::{Path, Query},
     http::HeaderMap,
-    routing::get,
+    routing::{get, post},
 };
 use serde::{Deserialize, Serialize};
 
@@ -26,6 +27,7 @@ fn app() -> Router {
         .route("/users/{id}", get(get_user))
         .route("/users", get(list_users).post(create_user))
         .route("/headers", get(show_headers))
+        .route("/raw", post(raw_body))
 }
 
 #[derive(Debug, Deserialize)]
@@ -97,4 +99,14 @@ async fn show_headers(headers: HeaderMap) -> String {
         .unwrap_or("não informado");
 
     format!("User-Agent: {user_agent}\nContent-Type: {content_type}")
+}
+
+// curl -w "\n\n" -X POST http://localhost:8000/raw \
+//   -d "Olá, corpo bruto!"
+//
+// curl -w "\n\n" -X POST http://localhost:8000/raw \
+//   -H "Content-Type: application/json" \
+//   -d '{"message":"Olá"}'
+async fn raw_body(body: Bytes) -> String {
+    format!("Recebi {} bytes", body.len())
 }
