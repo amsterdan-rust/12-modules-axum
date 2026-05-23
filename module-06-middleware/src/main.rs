@@ -1,12 +1,18 @@
 use axum::{
     Router,
     extract::Request,
-    http::{HeaderValue, StatusCode},
+    http::{HeaderValue, Method, StatusCode, header},
     middleware::{self, Next},
     response::{IntoResponse, Response},
     routing::get,
 };
 use std::time::Instant;
+use tower::ServiceBuilder;
+use tower_http::{
+    compression::CompressionLayer,
+    cors::{Any, CorsLayer},
+    trace::TraceLayer,
+};
 use tracing::Level;
 
 async fn logging_middleware(request: Request, next: Next) -> Response {
@@ -80,6 +86,12 @@ fn app() -> Router {
         .nest("/protected", protected_routes())
         .layer(middleware::from_fn(timing_middleware))
         .layer(middleware::from_fn(logging_middleware))
+        .layer(
+            ServiceBuilder::new()
+                .layer(TraceLayer::new_for_http())
+                .layer(cors_layer())
+                .layer(CompressionLayer::new()),
+        )
 }
 
 #[tokio::main]
@@ -113,4 +125,11 @@ async fn protected_data() -> impl IntoResponse {
         "message": "Secret data",
         "authorized": true,
     }))
+}
+
+fn cors_layer() -> CorsLayer {
+    CorsLayer::new()
+        .allow_origin(Any)
+        .allow_methods([Method::GET, Method::POST, Method::PUT, Method::DELETE])
+        .allow_headers([header::CONTENT_TYPE, header::AUTHORIZATION])
 }
