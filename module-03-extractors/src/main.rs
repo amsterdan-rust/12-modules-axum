@@ -1,7 +1,7 @@
 use axum::{
     Json, Router,
     body::Bytes,
-    extract::{Path, Query},
+    extract::{Path, Query, RawQuery},
     http::HeaderMap,
     routing::{get, post},
 };
@@ -29,6 +29,7 @@ fn app() -> Router {
         .route("/headers", get(show_headers))
         .route("/raw", post(raw_body))
         .route("/users/{id}/update", post(update_user_with_extractors))
+        .route("/optional", get(optional_query))
 }
 
 #[derive(Debug, Deserialize)]
@@ -135,4 +136,25 @@ async fn update_user_with_extractors(
         "Atualizando usuário {id}\nPágina: {page}\nLimite: {limit}\nOrdenação: {sort}\nUser-Agent: {user_agent}\nNome: {}\nEmail: {}",
         payload.name, payload.email,
     )
+}
+
+// curl -w '\n\n' 'http://localhost:8000/optional'
+//
+// curl -w '\n\n' 'http://localhost:8000/optional?page=2'
+//
+// curl -w '\n\n' 'http://localhost:8000/optional?page=2&limit=5&sort=name'
+async fn optional_query(
+    RawQuery(raw_query): RawQuery,
+    Query(params): Query<ListUsersParams>,
+) -> String {
+    match raw_query {
+        Some(_) => {
+            let page = params.page.unwrap_or(1);
+            let limit = params.limit.unwrap_or(10);
+            let sort = params.sort.unwrap_or_else(|| "id".to_string());
+
+            format!("Query enviada - página {page}, limite {limit}, ordenação {sort}")
+        }
+        None => "Nenhuma query enviada".to_string(),
+    }
 }
