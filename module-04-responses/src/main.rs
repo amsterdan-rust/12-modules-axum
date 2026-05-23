@@ -1,7 +1,8 @@
 use axum::{
     Json, Router,
+    body::Body,
     http::{HeaderMap, HeaderValue, StatusCode, header},
-    response::{Html, Redirect},
+    response::{Html, IntoResponse, Redirect, Response},
     routing::get,
 };
 use serde::Serialize;
@@ -39,6 +40,7 @@ fn app() -> Router {
         .route("/new-location", get(new_location))
         .route("/temporary-location", get(temporary_location))
         .route("/success", get(success))
+        .route("/custom", get(custom_response))
 }
 
 // curl -w '\n\n' 'http://localhost:8000'
@@ -256,4 +258,35 @@ async fn temporary_location() -> &'static str {
 // curl -w '\n\n' 'http://localhost:8000/success'
 async fn success() -> &'static str {
     "Operação concluída com sucesso"
+}
+
+struct CustomResponse {
+    message: String,
+    status: StatusCode,
+}
+
+impl IntoResponse for CustomResponse {
+    fn into_response(self) -> Response {
+        let body = format!(
+            r#"{{"message":"{}","status":{}}}"#,
+            self.message,
+            self.status.as_u16(),
+        );
+
+        Response::builder()
+            .status(self.status)
+            .header(header::CONTENT_TYPE, "application/json")
+            .body(Body::from(body))
+            .expect("erro ao construir resposta")
+    }
+}
+
+// curl -i 'http://localhost:8000/custom'
+//
+// echo
+async fn custom_response() -> CustomResponse {
+    CustomResponse {
+        message: "Resposta criada com IntoResponse".to_string(),
+        status: StatusCode::OK,
+    }
 }
