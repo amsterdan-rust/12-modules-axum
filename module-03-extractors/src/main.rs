@@ -1,3 +1,5 @@
+mod body_extractor;
+
 use axum::{
     Json, Router,
     body::Bytes,
@@ -7,6 +9,8 @@ use axum::{
     routing::{get, post},
 };
 use serde::{Deserialize, Serialize};
+
+use crate::body_extractor::{ValidatedJson, ValidatedUser};
 
 #[tokio::main]
 async fn main() {
@@ -32,6 +36,7 @@ fn app() -> Router {
         .route("/users/{id}/update", post(update_user_with_extractors))
         .route("/optional", get(optional_query))
         .route("/protected", get(protected))
+        .route("/validated-users", post(create_validated_user))
 }
 
 #[derive(Debug, Deserialize)]
@@ -207,4 +212,19 @@ where
 //   -H 'X-API-Key: secret123'
 async fn protected(ApiKey(key): ApiKey) -> String {
     format!("Acesso permitido. API key recebida: {key}")
+}
+
+// curl -w '\n\n' -X POST 'http://localhost:8000/validated-users' \
+//   -H 'Content-Type: application/json' \
+//   -d '{"name":"Ana","email":"ana@example.com"}'
+//
+// curl -w '\n\n' -X POST 'http://localhost:8000/validated-users' \
+//   -H 'Content-Type: application/json' \
+//   -d '{"name":"A","email":"ana@example.com"}'
+//
+// curl -w '\n\n' -X POST 'http://localhost:8000/validated-users' \
+//   -H 'Content-Type: application/json' \
+//   -d '{"name":"Ana","email":"ana.example.com"}'
+async fn create_validated_user(ValidatedJson(user): ValidatedJson<ValidatedUser>) -> String {
+    format!("Usuário validado: {} <{}>", user.name, user.email)
 }
