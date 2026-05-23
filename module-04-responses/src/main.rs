@@ -1,4 +1,5 @@
-use axum::{Router, http::StatusCode, routing::get};
+use axum::{Json, Router, http::StatusCode, routing::get};
+use serde::Serialize;
 
 #[tokio::main]
 async fn main() {
@@ -20,6 +21,8 @@ fn app() -> Router {
         .route("/static", get(static_text))
         .route("/owned", get(owned_text))
         .route("/created", get(created))
+        .route("/json/user", get(json_user))
+        .route("/json/created", get(json_created_user))
 }
 
 // curl -w '\n\n' 'http://localhost:8000'
@@ -51,4 +54,37 @@ fn current_timestamp() -> u64 {
         .duration_since(std::time::UNIX_EPOCH)
         .expect("erro ao calcular timestamp")
         .as_secs()
+}
+
+#[derive(Serialize)]
+struct User {
+    id: u64,
+    name: String,
+    email: String,
+    active: bool,
+}
+
+// curl -w '\n\n' 'http://localhost:8000/json/user'
+async fn json_user() -> Json<User> {
+    Json(User {
+        id: 1,
+        name: "Ana".to_string(),
+        email: "ana@example.com".to_string(),
+        active: true,
+    })
+}
+
+// curl -i 'http://localhost:8000/json/created'
+//
+// echo
+async fn json_created_user() -> (StatusCode, Json<User>) {
+    (
+        StatusCode::CREATED,
+        Json(User {
+            id: 2,
+            name: "Bruno".to_string(),
+            email: "bruno@example.com".to_string(),
+            active: true,
+        }),
+    )
 }
