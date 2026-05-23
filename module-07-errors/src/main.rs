@@ -95,6 +95,35 @@ async fn database_operation() -> Result<&'static str, AppError> {
     Err(AppError::DatabaseError("Connection timeout".to_string()))
 }
 
+async fn complex_operation(Path(id): Path<u64>) -> Result<Json<User>, AppError> {
+    let user = find_user(id)?;
+
+    validate_user(&user)?;
+
+    Ok(Json(user))
+}
+
+fn find_user(id: u64) -> Result<User, AppError> {
+    if id == 0 {
+        Err(AppError::InvalidInput("ID cannot be zero".to_string()))
+    } else if id > 100 {
+        Err(AppError::UserNotFound(id))
+    } else {
+        Ok(User {
+            id,
+            name: format!("User{id}"),
+        })
+    }
+}
+
+fn validate_user(user: &User) -> Result<(), AppError> {
+    if user.name.is_empty() {
+        Err(AppError::InvalidInput("Name cannot be empty".to_string()))
+    } else {
+        Ok(())
+    }
+}
+
 fn app() -> Router {
     Router::new()
         // Testes:
@@ -116,6 +145,12 @@ fn app() -> Router {
         //
         // curl -i -w '\n\n' http://localhost:8000/database
         .route("/database", get(database_operation))
+        // Testes:
+        //
+        // curl -i -w '\n\n' http://localhost:8000/complex/1
+        // curl -i -w '\n\n' http://localhost:8000/complex/0
+        // curl -i -w '\n\n' http://localhost:8000/complex/999
+        .route("/complex/{id}", get(complex_operation))
 }
 
 #[tokio::main]
