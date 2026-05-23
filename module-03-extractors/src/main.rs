@@ -1,8 +1,9 @@
 use axum::{
     Json, Router,
     body::Bytes,
-    extract::{Path, Query, RawQuery},
-    http::HeaderMap,
+    extract::{FromRequestParts, Path, Query, RawQuery},
+    http::{HeaderMap, StatusCode, request::Parts},
+    response::{IntoResponse, Response},
     routing::{get, post},
 };
 use serde::{Deserialize, Serialize};
@@ -30,6 +31,7 @@ fn app() -> Router {
         .route("/raw", post(raw_body))
         .route("/users/{id}/update", post(update_user_with_extractors))
         .route("/optional", get(optional_query))
+        .route("/protected", get(protected))
 }
 
 #[derive(Debug, Deserialize)]
@@ -157,4 +159,52 @@ async fn optional_query(
         }
         None => "Nenhuma query enviada".to_string(),
     }
+}
+
+struct ApiKey(String);
+
+#[derive(Debug)]
+struct ApiKeyError;
+
+impl IntoResponse for ApiKeyError {
+    fn into_response(self) -> Response {
+        (
+            StatusCode::UNAUTHORIZED,
+            "API key ausente ou inválida. Envie o header X-API-Key.",
+        )
+            .into_response()
+    }
+}
+
+impl<S> FromRequestParts<S> for ApiKey
+where
+    S: Send + Sync,
+{
+    type Rejection = ApiKeyError;
+
+    fn from_request_parts(
+        parts: &mut Parts,
+        _state: &S,
+    ) -> impl Future<Output = Result<Self, Self::Rejection>> + Send {
+        let api_key = parts
+            .headers
+            .get("x-api-key")
+            .and_then(|value| value.to_str().ok())
+            .map(|value| value.to_string());
+
+        async move {
+            match api_key {
+                Some(key) if !key.is_empty() => Ok(ApiKey(key)),
+                _ => Err(ApiKeyError),
+            }
+        }
+    }
+}
+
+// curl -i 'http://localhost:8000/protected'
+//
+// curl -i 'http://localhost:8000/protected' \
+//   -H 'X-API-Key: secret123'
+async fn protected(ApiKey(key): ApiKey) -> String {
+    format!("Acesso permitido. API key recebida: {key}")
 }
