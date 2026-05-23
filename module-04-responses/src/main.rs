@@ -23,6 +23,7 @@ fn app() -> Router {
         .route("/created", get(created))
         .route("/json/user", get(json_user))
         .route("/json/created", get(json_created_user))
+        .route("/json/users", get(json_users))
 }
 
 // curl -w '\n\n' 'http://localhost:8000'
@@ -87,4 +88,35 @@ async fn json_created_user() -> (StatusCode, Json<User>) {
             active: true,
         }),
     )
+}
+
+#[derive(Serialize)]
+struct UsersResponse {
+    users: Vec<User>,
+    total: usize,
+    page: u32,
+}
+
+// curl -w '\n\n' 'http://localhost:8000/json/users'
+async fn json_users() -> Json<UsersResponse> {
+    let users = vec![
+        User {
+            id: 1,
+            name: "Ana".to_string(),
+            email: "ana@example.com".to_string(),
+            active: true,
+        },
+        User {
+            id: 2,
+            name: "Bruno".to_string(),
+            email: "bruno@example.com".to_string(),
+            active: false,
+        },
+    ];
+
+    Json(UsersResponse {
+        total: users.len(),
+        users,
+        page: 1,
+    })
 }
