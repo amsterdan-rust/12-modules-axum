@@ -1,10 +1,12 @@
 mod body_extractor;
 mod query_extractor;
 
+use std::sync::Arc;
+
 use axum::{
     Json, Router,
     body::Bytes,
-    extract::{Path, Query, RawQuery},
+    extract::{Path, Query, RawQuery, State},
     http::HeaderMap,
     routing::{get, post},
 };
@@ -17,6 +19,11 @@ use crate::{
 
 #[tokio::main]
 async fn main() {
+    let state = Arc::new(AppState {
+        api_version: "v1.0.0".to_string(),
+        database_url: "postgres://localhost/app".to_string(),
+    });
+
     let listener = tokio::net::TcpListener::bind("0.0.0.0:8000")
         .await
         .expect("não foi possível abrir a porta 8000");
@@ -24,12 +31,12 @@ async fn main() {
     println!("Module 03: Extractors");
     println!("Servidor rodando em http://localhost:8000");
 
-    axum::serve(listener, app())
+    axum::serve(listener, app(state))
         .await
         .expect("erro ao iniciar o servidor");
 }
 
-fn app() -> Router {
+fn app(state: Arc<AppState>) -> Router {
     Router::new()
         .route("/", get(home))
         .route("/users/{id}", get(get_user))
@@ -40,6 +47,8 @@ fn app() -> Router {
         .route("/optional", get(optional_query))
         .route("/protected", get(protected))
         .route("/validated-users", post(create_validated_user))
+        .route("/state", get(show_state))
+        .with_state(state)
 }
 
 #[derive(Debug, Deserialize)]
@@ -190,4 +199,18 @@ async fn protected(ApiKey(key): ApiKey) -> String {
 //   -d '{"name":"Ana","email":"ana.example.com"}'
 async fn create_validated_user(ValidatedJson(user): ValidatedJson<ValidatedUser>) -> String {
     format!("Usuário validado: {} <{}>", user.name, user.email)
+}
+
+#[derive(Clone)]
+struct AppState {
+    api_version: String,
+    database_url: String,
+}
+
+// curl -w '\n\n' 'http://localhost:8000/state'
+async fn show_state(State(state): State<Arc<AppState>>) -> String {
+    format!(
+        "API version: {}\nDatabase URL: {}",
+        state.api_version, state.database_url,
+    )
 }
