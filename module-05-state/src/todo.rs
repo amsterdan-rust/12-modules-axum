@@ -5,7 +5,9 @@ use serde::{Deserialize, Serialize};
 use tokio::sync::RwLock;
 use uuid::Uuid;
 
-pub fn todo_routes(store: TodoStore) -> Router {
+use crate::AppState;
+
+pub fn todo_routes() -> Router<AppState> {
     Router::new()
         // Testes:
         //
@@ -27,7 +29,6 @@ pub fn todo_routes(store: TodoStore) -> Router {
             "/todos/{id}",
             get(get_todo).put(update_todo).delete(delete_todo),
         )
-        .with_state(store)
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -50,8 +51,8 @@ struct UpdateTodo {
 
 pub type TodoStore = Arc<RwLock<HashMap<String, Todo>>>;
 
-async fn list_todos(State(store): State<TodoStore>) -> Json<Vec<Todo>> {
-    let todos = store.read().await;
+async fn list_todos(State(state): State<AppState>) -> Json<Vec<Todo>> {
+    let todos = state.todos.read().await;
 
     let todos_vec = todos.values().cloned().collect();
 
@@ -59,7 +60,7 @@ async fn list_todos(State(store): State<TodoStore>) -> Json<Vec<Todo>> {
 }
 
 async fn create_todo(
-    State(store): State<TodoStore>,
+    State(state): State<AppState>,
     Json(input): Json<CreateTodo>,
 ) -> (StatusCode, Json<Todo>) {
     let todo = Todo {
@@ -68,16 +69,20 @@ async fn create_todo(
         completed: false,
     };
 
-    store.write().await.insert(todo.id.clone(), todo.clone());
+    state
+        .todos
+        .write()
+        .await
+        .insert(todo.id.clone(), todo.clone());
 
     (StatusCode::CREATED, Json(todo))
 }
 
 async fn get_todo(
-    State(store): State<TodoStore>,
+    State(state): State<AppState>,
     axum::extract::Path(id): axum::extract::Path<String>,
 ) -> Result<Json<Todo>, StatusCode> {
-    let todos = store.read().await;
+    let todos = state.todos.read().await;
 
     todos
         .get(&id)
@@ -87,11 +92,11 @@ async fn get_todo(
 }
 
 async fn update_todo(
-    State(store): State<TodoStore>,
+    State(state): State<AppState>,
     axum::extract::Path(id): axum::extract::Path<String>,
     Json(input): Json<UpdateTodo>,
 ) -> Result<Json<Todo>, StatusCode> {
-    let mut todos = store.write().await;
+    let mut todos = state.todos.write().await;
 
     if let Some(todo) = todos.get_mut(&id) {
         if let Some(title) = input.title {
@@ -109,10 +114,10 @@ async fn update_todo(
 }
 
 async fn delete_todo(
-    State(store): State<TodoStore>,
+    State(state): State<AppState>,
     axum::extract::Path(id): axum::extract::Path<String>,
 ) -> StatusCode {
-    let mut todos = store.write().await;
+    let mut todos = state.todos.write().await;
 
     if todos.remove(&id).is_some() {
         StatusCode::NO_CONTENT
