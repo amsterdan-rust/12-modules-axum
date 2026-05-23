@@ -1,16 +1,28 @@
+mod metricx;
 mod todo;
 
 use axum::{Json, Router, extract::State, routing::get};
 use std::{collections::HashMap, sync::Arc};
 use tokio::sync::RwLock;
 
-use crate::todo::{TodoStore, todo_routes};
+use crate::{
+    metricx::{Metrics, get_metrics, track_request},
+    todo::{TodoStore, todo_routes},
+};
 
 #[derive(Clone)]
 struct AppConfig {
     app_name: String,
     version: String,
     max_items_per_page: usize,
+}
+
+#[derive(Clone)]
+pub struct AppState {
+    config: Arc<AppConfig>,
+    todos: TodoStore,
+    metrics: Arc<RwLock<Metrics>>,
+    db: DbPool,
 }
 
 async fn get_config(State(state): State<AppState>) -> Json<serde_json::Value> {
@@ -34,6 +46,7 @@ fn app() -> Router {
         config,
         todos,
         metrics: Arc::new(RwLock::new(Metrics::default())),
+        db: DbPool::new("postgres://localhost/my_app"),
     };
 
     Router::new()
@@ -50,6 +63,7 @@ fn app() -> Router {
         // curl -w '\n\n' http://localhost:8000/metrics
         .route("/metrics", get(get_metrics))
         .route("/track", get(track_request))
+        .route("/db/users", get(list_users_from_db))
         .merge(todo_routes())
         .with_state(state)
 }
@@ -67,32 +81,26 @@ async fn main() {
 }
 
 #[derive(Clone)]
-pub struct AppState {
-    config: Arc<AppConfig>,
-    todos: TodoStore,
-    metrics: Arc<RwLock<Metrics>>,
+struct DbPool {
+    connection_string: String,
+    max_connections: u32,
 }
 
-#[derive(Debug, Default)]
-struct Metrics {
-    request_count: u64,
-    error_count: u64,
+impl DbPool {
+    fn new(connection_string: &str) -> Self {
+        Self {
+            connection_string: connection_string.to_string(),
+            max_connections: 10,
+        }
+    }
+
+    async fn query_users(&self) -> Vec<String> {
+        vec!["Ana".to_string(), "Bruno".to_string(), "Carla".to_string()]
+    }
 }
 
-async fn get_metrics(State(state): State<AppState>) -> Json<serde_json::Value> {
-    let metrics = state.metrics.read().await;
+async fn list_users_from_db(State(state): State<AppState>) -> Json<Vec<String>> {
+    let users = state.db.query_users().await;
 
-    Json(serde_json::json!({
-        "requests": metrics.request_count,
-        "errors": metrics.error_count,
-        "app_version": state.config.version,
-    }))
-}
-
-async fn track_request(State(state): State<AppState>) -> &'static str {
-    let mut metrics = state.metrics.write().await;
-
-    metrics.request_count += 1;
-
-    "Request counted!"
+    Json(users)
 }
