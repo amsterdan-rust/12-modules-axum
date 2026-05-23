@@ -1,6 +1,6 @@
 [workspace]
 resolver = "3"
-members = ["module-01-intro", "module-02-routing", "module-03-extractors"]
+members = ["module-01-intro", "module-02-routing", "module-03-extractors", "module-04-responses"]
 
 [workspace.package]
 version = "0.1.0"
