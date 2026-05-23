@@ -41,6 +41,10 @@ fn app() -> Router {
         .route("/temporary-location", get(temporary_location))
         .route("/success", get(success))
         .route("/custom", get(custom_response))
+        .route("/api/success", get(api_success))
+        .route("/api/error", get(api_error))
+        .route("/maybe-user", get(maybe_user))
+        .route("/maybe-error", get(maybe_error))
 }
 
 // curl -w '\n\n' 'http://localhost:8000'
@@ -289,4 +293,69 @@ async fn custom_response() -> CustomResponse {
         message: "Resposta criada com IntoResponse".to_string(),
         status: StatusCode::OK,
     }
+}
+
+#[derive(Serialize)]
+struct ApiResponse<T: Serialize> {
+    success: bool,
+    data: Option<T>,
+    error: Option<String>,
+}
+
+impl<T: Serialize> IntoResponse for ApiResponse<T> {
+    fn into_response(self) -> Response {
+        let status = if self.success {
+            StatusCode::OK
+        } else {
+            StatusCode::BAD_REQUEST
+        };
+
+        (status, Json(self)).into_response()
+    }
+}
+
+// curl -i 'http://localhost:8000/api/success'
+//
+// echo
+async fn api_success() -> ApiResponse<User> {
+    ApiResponse {
+        success: true,
+        data: Some(User {
+            id: 1,
+            name: "Ana".to_string(),
+            email: "ana@example.com".to_string(),
+            active: true,
+        }),
+        error: None,
+    }
+}
+
+// curl -i 'http://localhost:8000/api/error'
+//
+// echo
+async fn api_error() -> ApiResponse<()> {
+    ApiResponse {
+        success: false,
+        data: None,
+        error: Some("Algo deu errado".to_string()),
+    }
+}
+
+// curl -i 'http://localhost:8000/maybe-user'
+//
+// echo
+async fn maybe_user() -> Result<Json<User>, (StatusCode, String)> {
+    Ok(Json(User {
+        id: 1,
+        name: "Ana".to_string(),
+        email: "ana@example.com".to_string(),
+        active: true,
+    }))
+}
+
+// curl -i 'http://localhost:8000/maybe-error'
+//
+// echo
+async fn maybe_error() -> Result<Json<User>, (StatusCode, String)> {
+    Err((StatusCode::NOT_FOUND, "Usuário não encontrado".to_string()))
 }
