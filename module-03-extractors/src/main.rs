@@ -28,6 +28,7 @@ fn app() -> Router {
         .route("/users", get(list_users).post(create_user))
         .route("/headers", get(show_headers))
         .route("/raw", post(raw_body))
+        .route("/users/{id}/update", post(update_user_with_extractors))
 }
 
 #[derive(Debug, Deserialize)]
@@ -109,4 +110,29 @@ async fn show_headers(headers: HeaderMap) -> String {
 //   -d '{"message":"Olá"}'
 async fn raw_body(body: Bytes) -> String {
     format!("Recebi {} bytes", body.len())
+}
+
+// curl -w '\n\n' -X POST 'http://localhost:8000/users/10/update?page=2&limit=5&sort=name' \
+//   -H 'Content-Type: application/json' \
+//   -H 'User-Agent: Meu Cliente Rust' \
+//   -d '{"name":"Ana","email":"ana@example.com"}'
+async fn update_user_with_extractors(
+    Path(id): Path<u64>,
+    Query(params): Query<ListUsersParams>,
+    headers: HeaderMap,
+    Json(payload): Json<CreateUserRequest>,
+) -> String {
+    let page = params.page.unwrap_or(1);
+    let limit = params.limit.unwrap_or(10);
+    let sort = params.sort.unwrap_or_else(|| "id".to_string());
+
+    let user_agent = headers
+        .get("user-agent")
+        .and_then(|value| value.to_str().ok())
+        .unwrap_or("desconhecido");
+
+    format!(
+        "Atualizando usuário {id}\nPágina: {page}\nLimite: {limit}\nOrdenação: {sort}\nUser-Agent: {user_agent}\nNome: {}\nEmail: {}",
+        payload.name, payload.email,
+    )
 }
