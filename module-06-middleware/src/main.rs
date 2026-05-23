@@ -6,7 +6,7 @@ use axum::{
     response::{IntoResponse, Response},
     routing::get,
 };
-use std::time::Instant;
+use std::time::{Duration, Instant};
 use tower::ServiceBuilder;
 use tower_http::{
     compression::CompressionLayer,
@@ -83,6 +83,7 @@ fn app() -> Router {
         // curl -w '\n\n' http://localhost:8000/public
         .route("/", get(index))
         .route("/public", get(public_data))
+        .route("/slow", get(slow_endpoint))
         .nest("/protected", protected_routes())
         .layer(middleware::from_fn(timing_middleware))
         .layer(middleware::from_fn(logging_middleware))
@@ -132,4 +133,10 @@ fn cors_layer() -> CorsLayer {
         .allow_origin(Any)
         .allow_methods([Method::GET, Method::POST, Method::PUT, Method::DELETE])
         .allow_headers([header::CONTENT_TYPE, header::AUTHORIZATION])
+}
+
+async fn slow_endpoint() -> &'static str {
+    tokio::time::sleep(Duration::from_secs(1)).await;
+
+    "Slow operation done!"
 }
