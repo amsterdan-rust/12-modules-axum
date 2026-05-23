@@ -1,7 +1,7 @@
 mod metricx;
 mod todo;
 
-use axum::{Json, Router, extract::State, routing::get};
+use axum::{Extension, Json, Router, extract::State, routing::get};
 use std::{collections::HashMap, sync::Arc};
 use tokio::sync::RwLock;
 
@@ -49,6 +49,11 @@ fn app() -> Router {
         db: DbPool::new("postgres://localhost/my_app"),
     };
 
+    let current_user = CurrentUser {
+        id: "user-123".to_string(),
+        name: "Demo User".to_string(),
+    };
+
     Router::new()
         // Teste:
         //
@@ -64,8 +69,10 @@ fn app() -> Router {
         .route("/metrics", get(get_metrics))
         .route("/track", get(track_request))
         .route("/db/users", get(list_users_from_db))
+        .route("/me", get(get_current_user))
         .merge(todo_routes())
         .with_state(state)
+        .layer(Extension(current_user))
 }
 
 #[tokio::main]
@@ -103,4 +110,17 @@ async fn list_users_from_db(State(state): State<AppState>) -> Json<Vec<String>> 
     let users = state.db.query_users().await;
 
     Json(users)
+}
+
+#[derive(Clone)]
+struct CurrentUser {
+    id: String,
+    name: String,
+}
+
+async fn get_current_user(Extension(user): Extension<CurrentUser>) -> Json<serde_json::Value> {
+    Json(serde_json::json!({
+        "id": user.id,
+        "name": user.name,
+    }))
 }
