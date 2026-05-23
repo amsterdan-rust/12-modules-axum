@@ -1,6 +1,7 @@
 use axum::{
     Router,
     extract::Request,
+    http::HeaderValue,
     middleware::{self, Next},
     response::{IntoResponse, Response},
     routing::get,
@@ -26,6 +27,21 @@ async fn logging_middleware(request: Request, next: Next) -> Response {
     response
 }
 
+async fn timing_middleware(request: Request, next: Next) -> Response {
+    let start = Instant::now();
+
+    let mut response = next.run(request).await;
+
+    let elapsed = start.elapsed().as_millis();
+
+    response.headers_mut().insert(
+        "X-Response-Time",
+        HeaderValue::from_str(&format!("{elapsed}ms")).unwrap(),
+    );
+
+    response
+}
+
 async fn index() -> &'static str {
     "Welcome to Axum Middleware Module!"
 }
@@ -45,6 +61,7 @@ fn app() -> Router {
         // curl -w '\n\n' http://localhost:8000/public
         .route("/", get(index))
         .route("/public", get(public_data))
+        .layer(middleware::from_fn(timing_middleware))
         .layer(middleware::from_fn(logging_middleware))
 }
 
