@@ -1,7 +1,7 @@
 use axum::{
     Router,
     extract::Request,
-    http::HeaderValue,
+    http::{HeaderValue, StatusCode},
     middleware::{self, Next},
     response::{IntoResponse, Response},
     routing::get,
@@ -53,6 +53,22 @@ async fn public_data() -> impl IntoResponse {
     }))
 }
 
+fn protected_routes() -> Router {
+    Router::new()
+        // Testes:
+        //
+        // Sem API key:
+        //
+        // curl -i -w '\n\n' http://localhost:8000/protected/data
+        //
+        // Com API key:
+        //
+        // curl -i -w '\n\n' http://localhost:8000/protected/data \
+        //   -H 'X-API-Key: secret-key'
+        .route("/data", get(protected_data))
+        .route_layer(middleware::from_fn(auth_middleware))
+}
+
 fn app() -> Router {
     Router::new()
         // Testes:
@@ -61,6 +77,7 @@ fn app() -> Router {
         // curl -w '\n\n' http://localhost:8000/public
         .route("/", get(index))
         .route("/public", get(public_data))
+        .nest("/protected", protected_routes())
         .layer(middleware::from_fn(timing_middleware))
         .layer(middleware::from_fn(logging_middleware))
 }
@@ -77,4 +94,23 @@ async fn main() {
     println!("Server running on http://localhost:8000");
 
     axum::serve(listener, app()).await.expect("server failed");
+}
+
+async fn auth_middleware(request: Request, next: Next) -> Result<Response, StatusCode> {
+    let api_key = request
+        .headers()
+        .get("X-API-Key")
+        .and_then(|value| value.to_str().ok());
+
+    match api_key {
+        Some("secret-key") => Ok(next.run(request).await),
+        _ => Err(StatusCode::UNAUTHORIZED),
+    }
+}
+
+async fn protected_data() -> impl IntoResponse {
+    axum::Json(serde_json::json!({
+        "message": "Secret data",
+        "authorized": true,
+    }))
 }
