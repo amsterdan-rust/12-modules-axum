@@ -1,6 +1,6 @@
 use axum::{Json, Router, extract::State, http::StatusCode, routing::get};
 use chrono::{DateTime, Utc};
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use sqlx::{PgPool, postgres::PgPoolOptions};
 use uuid::Uuid;
 
@@ -10,6 +10,12 @@ struct User {
     name: String,
     email: String,
     created_at: DateTime<Utc>,
+}
+
+#[derive(Debug, Deserialize)]
+struct CreateUser {
+    name: String,
+    email: String,
 }
 
 #[derive(Serialize)]
@@ -39,6 +45,27 @@ async fn list_users(State(pool): State<PgPool>) -> Result<Json<Vec<User>>, Statu
     .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
 
     Ok(Json(users))
+}
+
+async fn create_user(
+    State(pool): State<PgPool>,
+    Json(input): Json<CreateUser>,
+) -> Result<(StatusCode, Json<User>), StatusCode> {
+    let user = sqlx::query_as::<_, User>(
+        r#"
+        INSERT INTO users (id, name, email)
+        VALUES ($1, $2, $3)
+        RETURNING id, name, email, created_at
+        "#,
+    )
+    .bind(Uuid::new_v4())
+    .bind(&input.name)
+    .bind(&input.email)
+    .fetch_one(&pool)
+    .await
+    .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+
+    Ok((StatusCode::CREATED, Json(user)))
 }
 
 async fn create_pool() -> PgPool {
@@ -76,10 +103,14 @@ fn app(pool: PgPool) -> Router {
         //
         // curl -i -w '\n\n' http://localhost:8000/health/database
         .route("/health/database", get(database_health))
-        // Teste:
+        // Testes:
         //
         // curl -i -w '\n\n' http://localhost:8000/users
-        .route("/users", get(list_users))
+        //
+        // curl -i -w '\n\n' -X POST http://localhost:8000/users \
+        //   -H 'Content-Type: application/json' \
+        //   -d '{"name":"Alice","email":"alice@example.com"}'
+        .route("/users", get(list_users).post(create_user))
         .with_state(pool)
 }
 
