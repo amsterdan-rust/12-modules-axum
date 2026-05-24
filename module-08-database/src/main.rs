@@ -1,6 +1,16 @@
-use axum::{Json, Router, extract::State, routing::get};
+use axum::{Json, Router, extract::State, http::StatusCode, routing::get};
+use chrono::{DateTime, Utc};
 use serde::Serialize;
 use sqlx::{PgPool, postgres::PgPoolOptions};
+use uuid::Uuid;
+
+#[derive(Debug, Serialize, sqlx::FromRow)]
+struct User {
+    id: Uuid,
+    name: String,
+    email: String,
+    created_at: DateTime<Utc>,
+}
 
 #[derive(Serialize)]
 struct HealthResponse {
@@ -14,6 +24,21 @@ async fn database_health(State(pool): State<PgPool>) -> Json<HealthResponse> {
         .expect("database health check failed");
 
     Json(HealthResponse { database: "ok" })
+}
+
+async fn list_users(State(pool): State<PgPool>) -> Result<Json<Vec<User>>, StatusCode> {
+    let users = sqlx::query_as::<_, User>(
+        r#"
+        SELECT id, name, email, created_at
+        FROM users
+        ORDER BY created_at DESC
+        "#,
+    )
+    .fetch_all(&pool)
+    .await
+    .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+
+    Ok(Json(users))
 }
 
 async fn create_pool() -> PgPool {
@@ -51,6 +76,10 @@ fn app(pool: PgPool) -> Router {
         //
         // curl -i -w '\n\n' http://localhost:8000/health/database
         .route("/health/database", get(database_health))
+        // Teste:
+        //
+        // curl -i -w '\n\n' http://localhost:8000/users
+        .route("/users", get(list_users))
         .with_state(pool)
 }
 
