@@ -22,3 +22,6 @@ r07 = "run -p module-07-errors"
 
 c08 = "check -p module-08-database"
 r08 = "run -p module-08-database"
+
+c09 = "check -p module-09-auth"
+r09 = "run -p module-09-auth"

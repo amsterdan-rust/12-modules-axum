@@ -1,6 +1,6 @@
 [workspace]
 resolver = "3"
-members = ["module-01-intro", "module-02-routing", "module-03-extractors", "module-04-responses", "module-05-state", "module-06-middleware", "module-07-errors", "module-08-database"]
+members = ["module-01-intro", "module-02-routing", "module-03-extractors", "module-04-responses", "module-05-state", "module-06-middleware", "module-07-errors", "module-08-database", "module-09-auth"]
 
 [workspace.package]
 version = "0.1.0"
@@ -24,3 +24,7 @@ thiserror = "2"
 sqlx = { version = "0.8.6", features = ["runtime-tokio-rustls", "postgres", "uuid", "chrono"] }
 chrono = { version = "0.4", features = ["serde"] }
 dotenvy = "0.15"
+# add mod 09
+jsonwebtoken = "9"
+argon2 = "0.5"
+rand = "0.8"
