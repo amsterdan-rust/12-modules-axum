@@ -1,4 +1,10 @@
-use axum::{Json, Router, extract::State, http::StatusCode, routing::get};
+use axum::{
+    Json, Router,
+    extract::State,
+    http::StatusCode,
+    response::{IntoResponse, Response},
+    routing::get,
+};
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use sqlx::{PgPool, postgres::PgPoolOptions};
@@ -18,6 +24,37 @@ struct CreateUser {
     email: String,
 }
 
+#[derive(Debug, thiserror::Error)]
+enum DbError {
+    #[error("User not found")]
+    NotFound,
+
+    #[error("Database error: {0}")]
+    Sqlx(#[from] sqlx::Error),
+}
+
+#[derive(Serialize)]
+struct ErrorResponse {
+    error: String,
+    code: u16,
+}
+
+impl IntoResponse for DbError {
+    fn into_response(self) -> Response {
+        let status = match self {
+            DbError::NotFound => StatusCode::NOT_FOUND,
+            DbError::Sqlx(_) => StatusCode::INTERNAL_SERVER_ERROR,
+        };
+
+        let body = ErrorResponse {
+            error: self.to_string(),
+            code: status.as_u16(),
+        };
+
+        (status, Json(body)).into_response()
+    }
+}
+
 #[derive(Serialize)]
 struct HealthResponse {
     database: &'static str,
@@ -32,7 +69,7 @@ async fn database_health(State(pool): State<PgPool>) -> Json<HealthResponse> {
     Json(HealthResponse { database: "ok" })
 }
 
-async fn list_users(State(pool): State<PgPool>) -> Result<Json<Vec<User>>, StatusCode> {
+async fn list_users(State(pool): State<PgPool>) -> Result<Json<Vec<User>>, DbError> {
     let users = sqlx::query_as::<_, User>(
         r#"
         SELECT id, name, email, created_at
@@ -41,8 +78,7 @@ async fn list_users(State(pool): State<PgPool>) -> Result<Json<Vec<User>>, Statu
         "#,
     )
     .fetch_all(&pool)
-    .await
-    .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+    .await?;
 
     Ok(Json(users))
 }
@@ -50,7 +86,7 @@ async fn list_users(State(pool): State<PgPool>) -> Result<Json<Vec<User>>, Statu
 async fn create_user(
     State(pool): State<PgPool>,
     Json(input): Json<CreateUser>,
-) -> Result<(StatusCode, Json<User>), StatusCode> {
+) -> Result<(StatusCode, Json<User>), DbError> {
     let user = sqlx::query_as::<_, User>(
         r#"
         INSERT INTO users (id, name, email)
@@ -62,8 +98,7 @@ async fn create_user(
     .bind(&input.name)
     .bind(&input.email)
     .fetch_one(&pool)
-    .await
-    .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+    .await?;
 
     Ok((StatusCode::CREATED, Json(user)))
 }
