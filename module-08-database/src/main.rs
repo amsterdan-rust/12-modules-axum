@@ -24,6 +24,12 @@ struct CreateUser {
     email: String,
 }
 
+#[derive(Debug, Deserialize)]
+struct UpdateUser {
+    name: Option<String>,
+    email: Option<String>,
+}
+
 #[derive(Debug, thiserror::Error)]
 enum DbError {
     #[error("User not found")]
@@ -119,6 +125,31 @@ async fn create_user(
     Ok((StatusCode::CREATED, Json(user)))
 }
 
+async fn update_user(
+    State(pool): State<PgPool>,
+    Path(id): Path<Uuid>,
+    Json(input): Json<UpdateUser>,
+) -> Result<Json<User>, DbError> {
+    let user = sqlx::query_as::<_, User>(
+        r#"
+        UPDATE users
+        SET
+            name = COALESCE($2, name),
+            email = COALESCE($3, email)
+        WHERE id = $1
+        RETURNING id, name, email, created_at
+        "#,
+    )
+    .bind(id)
+    .bind(&input.name)
+    .bind(&input.email)
+    .fetch_optional(&pool)
+    .await?
+    .ok_or(DbError::NotFound)?;
+
+    Ok(Json(user))
+}
+
 async fn create_pool() -> PgPool {
     dotenvy::dotenv().ok();
 
@@ -166,10 +197,18 @@ fn app(pool: PgPool) -> Router {
         //
         // curl -i -w '\n\n' http://localhost:8000/users/COLE_O_ID_AQUI
         //
+        // curl -i -w '\n\n' -X PUT http://localhost:8000/users/COLE_O_ID_AQUI \
+        //   -H 'Content-Type: application/json' \
+        //   -d '{"name":"Carla Atualizada"}'
+        //
+        // curl -i -w '\n\n' -X PUT http://localhost:8000/users/COLE_O_ID_AQUI \
+        //   -H 'Content-Type: application/json' \
+        //   -d '{"email":"carla.updated@example.com"}'
+        //
         // UUID inexistente:
         //
         // curl -i -w '\n\n' http://localhost:8000/users/00000000-0000-0000-0000-000000000000
-        .route("/users/{id}", get(get_user))
+        .route("/users/{id}", get(get_user).put(update_user))
         .with_state(pool)
 }
 
