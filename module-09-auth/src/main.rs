@@ -1,5 +1,5 @@
-use argon2::{Argon2, PasswordHasher, password_hash::SaltString};
-use axum::{Json, Router, extract::State, response::IntoResponse, routing::post};
+use argon2::{Argon2, PasswordHash, PasswordHasher, PasswordVerifier, password_hash::SaltString};
+use axum::{Json, Router, extract::State, http::StatusCode, response::IntoResponse, routing::post};
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 
@@ -37,6 +37,16 @@ fn hash_password(password: &str) -> String {
         .to_string()
 }
 
+fn verify_password(password: &str, hash: &str) -> bool {
+    let Ok(parsed_hash) = PasswordHash::new(hash) else {
+        return false;
+    };
+
+    Argon2::default()
+        .verify_password(password.as_bytes(), &parsed_hash)
+        .is_ok()
+}
+
 async fn register(Json(input): Json<RegisterRequest>) -> impl IntoResponse {
     let hashed_password = hash_password(&input.password);
 
@@ -51,11 +61,22 @@ async fn register(Json(input): Json<RegisterRequest>) -> impl IntoResponse {
 async fn login(
     State(_config): State<Arc<AuthConfig>>,
     Json(input): Json<LoginRequest>,
-) -> impl IntoResponse {
-    Json(LoginResponse {
-        message: "Login received".to_string(),
-        email: input.email,
-    })
+) -> Result<Json<LoginResponse>, StatusCode> {
+    let fake_user_email = "test@example.com";
+
+    let fake_password_hash = hash_password("password123");
+
+    let email_is_valid = input.email == fake_user_email;
+    let password_is_valid = verify_password(&input.password, &fake_password_hash);
+
+    if email_is_valid && password_is_valid {
+        Ok(Json(LoginResponse {
+            message: "Login successful".to_string(),
+            email: input.email,
+        }))
+    } else {
+        Err(StatusCode::UNAUTHORIZED)
+    }
 }
 
 #[tokio::main]
