@@ -1,6 +1,6 @@
 use axum::{
     Json, Router,
-    extract::State,
+    extract::{Path, State},
     http::StatusCode,
     response::{IntoResponse, Response},
     routing::get,
@@ -83,6 +83,22 @@ async fn list_users(State(pool): State<PgPool>) -> Result<Json<Vec<User>>, DbErr
     Ok(Json(users))
 }
 
+async fn get_user(State(pool): State<PgPool>, Path(id): Path<Uuid>) -> Result<Json<User>, DbError> {
+    let user = sqlx::query_as::<_, User>(
+        r#"
+        SELECT id, name, email, created_at
+        FROM users
+        WHERE id = $1
+        "#,
+    )
+    .bind(id)
+    .fetch_optional(&pool)
+    .await?
+    .ok_or(DbError::NotFound)?;
+
+    Ok(Json(user))
+}
+
 async fn create_user(
     State(pool): State<PgPool>,
     Json(input): Json<CreateUser>,
@@ -146,6 +162,14 @@ fn app(pool: PgPool) -> Router {
         //   -H 'Content-Type: application/json' \
         //   -d '{"name":"Alice","email":"alice@example.com"}'
         .route("/users", get(list_users).post(create_user))
+        // Testes:
+        //
+        // curl -i -w '\n\n' http://localhost:8000/users/COLE_O_ID_AQUI
+        //
+        // UUID inexistente:
+        //
+        // curl -i -w '\n\n' http://localhost:8000/users/00000000-0000-0000-0000-000000000000
+        .route("/users/{id}", get(get_user))
         .with_state(pool)
 }
 
