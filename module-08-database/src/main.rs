@@ -35,6 +35,9 @@ enum DbError {
     #[error("User not found")]
     NotFound,
 
+    #[error("Email already exists")]
+    EmailAlreadyExists,
+
     #[error("Database error: {0}")]
     Sqlx(#[from] sqlx::Error),
 }
@@ -49,6 +52,7 @@ impl IntoResponse for DbError {
     fn into_response(self) -> Response {
         let status = match self {
             DbError::NotFound => StatusCode::NOT_FOUND,
+            DbError::EmailAlreadyExists => StatusCode::CONFLICT,
             DbError::Sqlx(_) => StatusCode::INTERNAL_SERVER_ERROR,
         };
 
@@ -58,6 +62,17 @@ impl IntoResponse for DbError {
         };
 
         (status, Json(body)).into_response()
+    }
+}
+
+fn map_sqlx_error(error: sqlx::Error) -> DbError {
+    match &error {
+        sqlx::Error::Database(database_error)
+            if database_error.constraint() == Some("users_email_key") =>
+        {
+            DbError::EmailAlreadyExists
+        }
+        _ => DbError::Sqlx(error),
     }
 }
 
@@ -120,7 +135,8 @@ async fn create_user(
     .bind(&input.name)
     .bind(&input.email)
     .fetch_one(&pool)
-    .await?;
+    .await
+    .map_err(map_sqlx_error)?;
 
     Ok((StatusCode::CREATED, Json(user)))
 }
