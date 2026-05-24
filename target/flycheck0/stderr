@@ -1,12 +1,966 @@
-   0.095287385s  INFO prepare_target{force=false package_id=module-08-database v0.1.0 (/home/amsterdan/developer/workspace-axum/module-08-database) target="module-08-database"}: cargo::core::compiler::fingerprint: stale: changed "/home/amsterdan/developer/workspace-axum/module-08-database/src/main.rs"
-   0.095304725s  INFO prepare_target{force=false package_id=module-08-database v0.1.0 (/home/amsterdan/developer/workspace-axum/module-08-database) target="module-08-database"}: cargo::core::compiler::fingerprint:           (vs) "/home/amsterdan/developer/workspace-axum/target/debug/.fingerprint/module-08-database-26eb7236d3231245/dep-bin-module-08-database"
-   0.095308888s  INFO prepare_target{force=false package_id=module-08-database v0.1.0 (/home/amsterdan/developer/workspace-axum/module-08-database) target="module-08-database"}: cargo::core::compiler::fingerprint:                FileTime { seconds: 1779658132, nanos: 89807040 } < FileTime { seconds: 1779658251, nanos: 859119900 }
-   0.095475850s  INFO prepare_target{force=false package_id=module-08-database v0.1.0 (/home/amsterdan/developer/workspace-axum/module-08-database) target="module-08-database"}: cargo::core::compiler::fingerprint: fingerprint dirty for module-08-database v0.1.0 (/home/amsterdan/developer/workspace-axum/module-08-database)/Check { test: false }/TargetInner { name: "module-08-database", doc: true, ..: with_path("/home/amsterdan/developer/workspace-axum/module-08-database/src/main.rs", Edition2024) }
-   0.095487272s  INFO prepare_target{force=false package_id=module-08-database v0.1.0 (/home/amsterdan/developer/workspace-axum/module-08-database) target="module-08-database"}: cargo::core::compiler::fingerprint:     dirty: FsStatusOutdated(StaleItem(ChangedFile { reference: "/home/amsterdan/developer/workspace-axum/target/debug/.fingerprint/module-08-database-26eb7236d3231245/dep-bin-module-08-database", reference_mtime: FileTime { seconds: 1779658132, nanos: 89807040 }, stale: "/home/amsterdan/developer/workspace-axum/module-08-database/src/main.rs", stale_mtime: FileTime { seconds: 1779658251, nanos: 859119900 } }))
-   0.103979081s  INFO prepare_target{force=false package_id=module-08-database v0.1.0 (/home/amsterdan/developer/workspace-axum/module-08-database) target="module-08-database"}: cargo::core::compiler::fingerprint: stale: changed "/home/amsterdan/developer/workspace-axum/module-08-database/src/main.rs"
-   0.103990764s  INFO prepare_target{force=false package_id=module-08-database v0.1.0 (/home/amsterdan/developer/workspace-axum/module-08-database) target="module-08-database"}: cargo::core::compiler::fingerprint:           (vs) "/home/amsterdan/developer/workspace-axum/target/debug/.fingerprint/module-08-database-b3df0838159ae92f/dep-test-bin-module-08-database"
-   0.103993157s  INFO prepare_target{force=false package_id=module-08-database v0.1.0 (/home/amsterdan/developer/workspace-axum/module-08-database) target="module-08-database"}: cargo::core::compiler::fingerprint:                FileTime { seconds: 1779658132, nanos: 89807040 } < FileTime { seconds: 1779658251, nanos: 859119900 }
-   0.104016141s  INFO prepare_target{force=false package_id=module-08-database v0.1.0 (/home/amsterdan/developer/workspace-axum/module-08-database) target="module-08-database"}: cargo::core::compiler::fingerprint: fingerprint dirty for module-08-database v0.1.0 (/home/amsterdan/developer/workspace-axum/module-08-database)/Check { test: true }/TargetInner { name: "module-08-database", doc: true, ..: with_path("/home/amsterdan/developer/workspace-axum/module-08-database/src/main.rs", Edition2024) }
-   0.104024203s  INFO prepare_target{force=false package_id=module-08-database v0.1.0 (/home/amsterdan/developer/workspace-axum/module-08-database) target="module-08-database"}: cargo::core::compiler::fingerprint:     dirty: FsStatusOutdated(StaleItem(ChangedFile { reference: "/home/amsterdan/developer/workspace-axum/target/debug/.fingerprint/module-08-database-b3df0838159ae92f/dep-test-bin-module-08-database", reference_mtime: FileTime { seconds: 1779658132, nanos: 89807040 }, stale: "/home/amsterdan/developer/workspace-axum/module-08-database/src/main.rs", stale_mtime: FileTime { seconds: 1779658251, nanos: 859119900 } }))
+   0.130754973s  INFO prepare_target{force=false package_id=module-08-database v0.1.0 (/home/amsterdan/developer/workspace-axum/module-08-database) target="module-08-database"}: cargo::core::compiler::fingerprint: fingerprint error for module-08-database v0.1.0 (/home/amsterdan/developer/workspace-axum/module-08-database)/Check { test: false }/TargetInner { name: "module-08-database", doc: true, ..: with_path("/home/amsterdan/developer/workspace-axum/module-08-database/src/main.rs", Edition2024) }
+   0.130788104s  INFO prepare_target{force=false package_id=module-08-database v0.1.0 (/home/amsterdan/developer/workspace-axum/module-08-database) target="module-08-database"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/amsterdan/developer/workspace-axum/target/debug/.fingerprint/module-08-database-5db7c5a751f0e810/bin-module-08-database`
+
+Caused by:
+    No such file or directory (os error 2)
+
+Stack backtrace:
+   0: cargo_util::paths::read_bytes
+   1: cargo_util::paths::read
+   2: cargo::core::compiler::fingerprint::_compare_old_fingerprint
+   3: cargo::core::compiler::fingerprint::prepare_target
+   4: cargo::core::compiler::compile
+   5: <cargo::core::compiler::build_runner::BuildRunner>::compile
+   6: cargo::ops::cargo_compile::compile_ws
+   7: cargo::ops::cargo_compile::compile_with_exec
+   8: cargo::ops::cargo_compile::compile
+   9: cargo::commands::check::exec
+  10: <cargo::cli::Exec>::exec
+  11: cargo::main
+  12: std::sys::backtrace::__rust_begin_short_backtrace::<fn(), ()>
+  13: std::rt::lang_start::<()>::{closure#0}
+  14: <&dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe as core::ops::function::FnOnce<()>>::call_once
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/core/src/ops/function.rs:287:21
+  15: std::panicking::catch_unwind::do_call::<&dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe, i32>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panicking.rs:581:40
+  16: std::panicking::catch_unwind::<i32, &dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panicking.rs:544:19
+  17: std::panic::catch_unwind::<&dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe, i32>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panic.rs:359:14
+  18: std::rt::lang_start_internal::{closure#0}
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/rt.rs:175:24
+  19: std::panicking::catch_unwind::do_call::<std::rt::lang_start_internal::{closure#0}, isize>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panicking.rs:581:40
+  20: std::panicking::catch_unwind::<isize, std::rt::lang_start_internal::{closure#0}>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panicking.rs:544:19
+  21: std::panic::catch_unwind::<std::rt::lang_start_internal::{closure#0}, isize>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panic.rs:359:14
+  22: std::rt::lang_start_internal
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/rt.rs:171:5
+  23: main
+  24: <unknown>
+  25: __libc_start_main
+  26: <unknown>
+   0.137608077s  INFO prepare_target{force=false package_id=chrono v0.4.44 target="chrono"}: cargo::core::compiler::fingerprint: fingerprint error for chrono v0.4.44/Check { test: false }/TargetInner { ..: lib_target("chrono", ["lib"], "/home/amsterdan/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/chrono-0.4.44/src/lib.rs", Edition2021) }
+   0.137627801s  INFO prepare_target{force=false package_id=chrono v0.4.44 target="chrono"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/amsterdan/developer/workspace-axum/target/debug/.fingerprint/chrono-4495869b4267d932/lib-chrono`
+
+Caused by:
+    No such file or directory (os error 2)
+
+Stack backtrace:
+   0: cargo_util::paths::read_bytes
+   1: cargo_util::paths::read
+   2: cargo::core::compiler::fingerprint::_compare_old_fingerprint
+   3: cargo::core::compiler::fingerprint::prepare_target
+   4: cargo::core::compiler::compile
+   5: cargo::core::compiler::compile
+   6: <cargo::core::compiler::build_runner::BuildRunner>::compile
+   7: cargo::ops::cargo_compile::compile_ws
+   8: cargo::ops::cargo_compile::compile_with_exec
+   9: cargo::ops::cargo_compile::compile
+  10: cargo::commands::check::exec
+  11: <cargo::cli::Exec>::exec
+  12: cargo::main
+  13: std::sys::backtrace::__rust_begin_short_backtrace::<fn(), ()>
+  14: std::rt::lang_start::<()>::{closure#0}
+  15: <&dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe as core::ops::function::FnOnce<()>>::call_once
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/core/src/ops/function.rs:287:21
+  16: std::panicking::catch_unwind::do_call::<&dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe, i32>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panicking.rs:581:40
+  17: std::panicking::catch_unwind::<i32, &dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panicking.rs:544:19
+  18: std::panic::catch_unwind::<&dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe, i32>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panic.rs:359:14
+  19: std::rt::lang_start_internal::{closure#0}
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/rt.rs:175:24
+  20: std::panicking::catch_unwind::do_call::<std::rt::lang_start_internal::{closure#0}, isize>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panicking.rs:581:40
+  21: std::panicking::catch_unwind::<isize, std::rt::lang_start_internal::{closure#0}>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panicking.rs:544:19
+  22: std::panic::catch_unwind::<std::rt::lang_start_internal::{closure#0}, isize>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panic.rs:359:14
+  23: std::rt::lang_start_internal
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/rt.rs:171:5
+  24: main
+  25: <unknown>
+  26: __libc_start_main
+  27: <unknown>
+   0.137934292s  INFO prepare_target{force=false package_id=num-traits v0.2.19 target="num_traits"}: cargo::core::compiler::fingerprint: fingerprint error for num-traits v0.2.19/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("num_traits", ["lib"], "/home/amsterdan/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/num-traits-0.2.19/src/lib.rs", Edition2021) }
+   0.137939969s  INFO prepare_target{force=false package_id=num-traits v0.2.19 target="num_traits"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/amsterdan/developer/workspace-axum/target/debug/.fingerprint/num-traits-d164a93d9c385f6e/lib-num_traits`
+
+Caused by:
+    No such file or directory (os error 2)
+
+Stack backtrace:
+   0: cargo_util::paths::read_bytes
+   1: cargo_util::paths::read
+   2: cargo::core::compiler::fingerprint::_compare_old_fingerprint
+   3: cargo::core::compiler::fingerprint::prepare_target
+   4: cargo::core::compiler::compile
+   5: cargo::core::compiler::compile
+   6: cargo::core::compiler::compile
+   7: <cargo::core::compiler::build_runner::BuildRunner>::compile
+   8: cargo::ops::cargo_compile::compile_ws
+   9: cargo::ops::cargo_compile::compile_with_exec
+  10: cargo::ops::cargo_compile::compile
+  11: cargo::commands::check::exec
+  12: <cargo::cli::Exec>::exec
+  13: cargo::main
+  14: std::sys::backtrace::__rust_begin_short_backtrace::<fn(), ()>
+  15: std::rt::lang_start::<()>::{closure#0}
+  16: <&dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe as core::ops::function::FnOnce<()>>::call_once
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/core/src/ops/function.rs:287:21
+  17: std::panicking::catch_unwind::do_call::<&dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe, i32>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panicking.rs:581:40
+  18: std::panicking::catch_unwind::<i32, &dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panicking.rs:544:19
+  19: std::panic::catch_unwind::<&dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe, i32>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panic.rs:359:14
+  20: std::rt::lang_start_internal::{closure#0}
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/rt.rs:175:24
+  21: std::panicking::catch_unwind::do_call::<std::rt::lang_start_internal::{closure#0}, isize>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panicking.rs:581:40
+  22: std::panicking::catch_unwind::<isize, std::rt::lang_start_internal::{closure#0}>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panicking.rs:544:19
+  23: std::panic::catch_unwind::<std::rt::lang_start_internal::{closure#0}, isize>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panic.rs:359:14
+  24: std::rt::lang_start_internal
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/rt.rs:171:5
+  25: main
+  26: <unknown>
+  27: __libc_start_main
+  28: <unknown>
+   0.138254413s  INFO prepare_target{force=false package_id=sqlx v0.8.6 target="sqlx"}: cargo::core::compiler::fingerprint: fingerprint error for sqlx v0.8.6/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("sqlx", ["lib"], "/home/amsterdan/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/sqlx-0.8.6/src/lib.rs", Edition2021) }
+   0.138260230s  INFO prepare_target{force=false package_id=sqlx v0.8.6 target="sqlx"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/amsterdan/developer/workspace-axum/target/debug/.fingerprint/sqlx-8985ab22ffd970ff/lib-sqlx`
+
+Caused by:
+    No such file or directory (os error 2)
+
+Stack backtrace:
+   0: cargo_util::paths::read_bytes
+   1: cargo_util::paths::read
+   2: cargo::core::compiler::fingerprint::_compare_old_fingerprint
+   3: cargo::core::compiler::fingerprint::prepare_target
+   4: cargo::core::compiler::compile
+   5: cargo::core::compiler::compile
+   6: <cargo::core::compiler::build_runner::BuildRunner>::compile
+   7: cargo::ops::cargo_compile::compile_ws
+   8: cargo::ops::cargo_compile::compile_with_exec
+   9: cargo::ops::cargo_compile::compile
+  10: cargo::commands::check::exec
+  11: <cargo::cli::Exec>::exec
+  12: cargo::main
+  13: std::sys::backtrace::__rust_begin_short_backtrace::<fn(), ()>
+  14: std::rt::lang_start::<()>::{closure#0}
+  15: <&dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe as core::ops::function::FnOnce<()>>::call_once
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/core/src/ops/function.rs:287:21
+  16: std::panicking::catch_unwind::do_call::<&dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe, i32>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panicking.rs:581:40
+  17: std::panicking::catch_unwind::<i32, &dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panicking.rs:544:19
+  18: std::panic::catch_unwind::<&dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe, i32>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panic.rs:359:14
+  19: std::rt::lang_start_internal::{closure#0}
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/rt.rs:175:24
+  20: std::panicking::catch_unwind::do_call::<std::rt::lang_start_internal::{closure#0}, isize>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panicking.rs:581:40
+  21: std::panicking::catch_unwind::<isize, std::rt::lang_start_internal::{closure#0}>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panicking.rs:544:19
+  22: std::panic::catch_unwind::<std::rt::lang_start_internal::{closure#0}, isize>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panic.rs:359:14
+  23: std::rt::lang_start_internal
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/rt.rs:171:5
+  24: main
+  25: <unknown>
+  26: __libc_start_main
+  27: <unknown>
+   0.138809011s  INFO prepare_target{force=false package_id=sqlx-core v0.8.6 target="sqlx_core"}: cargo::core::compiler::fingerprint: fingerprint error for sqlx-core v0.8.6/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("sqlx_core", ["lib"], "/home/amsterdan/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/sqlx-core-0.8.6/src/lib.rs", Edition2021) }
+   0.138815350s  INFO prepare_target{force=false package_id=sqlx-core v0.8.6 target="sqlx_core"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/amsterdan/developer/workspace-axum/target/debug/.fingerprint/sqlx-core-84894b7a20aabcc6/lib-sqlx_core`
+
+Caused by:
+    No such file or directory (os error 2)
+
+Stack backtrace:
+   0: cargo_util::paths::read_bytes
+   1: cargo_util::paths::read
+   2: cargo::core::compiler::fingerprint::_compare_old_fingerprint
+   3: cargo::core::compiler::fingerprint::prepare_target
+   4: cargo::core::compiler::compile
+   5: cargo::core::compiler::compile
+   6: cargo::core::compiler::compile
+   7: <cargo::core::compiler::build_runner::BuildRunner>::compile
+   8: cargo::ops::cargo_compile::compile_ws
+   9: cargo::ops::cargo_compile::compile_with_exec
+  10: cargo::ops::cargo_compile::compile
+  11: cargo::commands::check::exec
+  12: <cargo::cli::Exec>::exec
+  13: cargo::main
+  14: std::sys::backtrace::__rust_begin_short_backtrace::<fn(), ()>
+  15: std::rt::lang_start::<()>::{closure#0}
+  16: <&dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe as core::ops::function::FnOnce<()>>::call_once
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/core/src/ops/function.rs:287:21
+  17: std::panicking::catch_unwind::do_call::<&dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe, i32>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panicking.rs:581:40
+  18: std::panicking::catch_unwind::<i32, &dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panicking.rs:544:19
+  19: std::panic::catch_unwind::<&dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe, i32>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panic.rs:359:14
+  20: std::rt::lang_start_internal::{closure#0}
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/rt.rs:175:24
+  21: std::panicking::catch_unwind::do_call::<std::rt::lang_start_internal::{closure#0}, isize>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panicking.rs:581:40
+  22: std::panicking::catch_unwind::<isize, std::rt::lang_start_internal::{closure#0}>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panicking.rs:544:19
+  23: std::panic::catch_unwind::<std::rt::lang_start_internal::{closure#0}, isize>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panic.rs:359:14
+  24: std::rt::lang_start_internal
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/rt.rs:171:5
+  25: main
+  26: <unknown>
+  27: __libc_start_main
+  28: <unknown>
+   0.140475579s  INFO prepare_target{force=false package_id=rustls v0.23.40 target="rustls"}: cargo::core::compiler::fingerprint: fingerprint error for rustls v0.23.40/Check { test: false }/TargetInner { ..: lib_target("rustls", ["lib"], "/home/amsterdan/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/rustls-0.23.40/src/lib.rs", Edition2021) }
+   0.140493703s  INFO prepare_target{force=false package_id=rustls v0.23.40 target="rustls"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/amsterdan/developer/workspace-axum/target/debug/.fingerprint/rustls-6dc545e7a823ec9d/lib-rustls`
+
+Caused by:
+    No such file or directory (os error 2)
+
+Stack backtrace:
+   0: cargo_util::paths::read_bytes
+   1: cargo_util::paths::read
+   2: cargo::core::compiler::fingerprint::_compare_old_fingerprint
+   3: cargo::core::compiler::fingerprint::prepare_target
+   4: cargo::core::compiler::compile
+   5: cargo::core::compiler::compile
+   6: cargo::core::compiler::compile
+   7: cargo::core::compiler::compile
+   8: <cargo::core::compiler::build_runner::BuildRunner>::compile
+   9: cargo::ops::cargo_compile::compile_ws
+  10: cargo::ops::cargo_compile::compile_with_exec
+  11: cargo::ops::cargo_compile::compile
+  12: cargo::commands::check::exec
+  13: <cargo::cli::Exec>::exec
+  14: cargo::main
+  15: std::sys::backtrace::__rust_begin_short_backtrace::<fn(), ()>
+  16: std::rt::lang_start::<()>::{closure#0}
+  17: <&dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe as core::ops::function::FnOnce<()>>::call_once
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/core/src/ops/function.rs:287:21
+  18: std::panicking::catch_unwind::do_call::<&dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe, i32>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panicking.rs:581:40
+  19: std::panicking::catch_unwind::<i32, &dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panicking.rs:544:19
+  20: std::panic::catch_unwind::<&dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe, i32>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panic.rs:359:14
+  21: std::rt::lang_start_internal::{closure#0}
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/rt.rs:175:24
+  22: std::panicking::catch_unwind::do_call::<std::rt::lang_start_internal::{closure#0}, isize>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panicking.rs:581:40
+  23: std::panicking::catch_unwind::<isize, std::rt::lang_start_internal::{closure#0}>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panicking.rs:544:19
+  24: std::panic::catch_unwind::<std::rt::lang_start_internal::{closure#0}, isize>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panic.rs:359:14
+  25: std::rt::lang_start_internal
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/rt.rs:171:5
+  26: main
+  27: <unknown>
+  28: __libc_start_main
+  29: <unknown>
+   0.140787307s  INFO prepare_target{force=false package_id=ring v0.17.14 target="ring"}: cargo::core::compiler::fingerprint: fingerprint error for ring v0.17.14/Check { test: false }/TargetInner { ..: lib_target("ring", ["lib"], "/home/amsterdan/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/ring-0.17.14/src/lib.rs", Edition2021) }
+   0.140793330s  INFO prepare_target{force=false package_id=ring v0.17.14 target="ring"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/amsterdan/developer/workspace-axum/target/debug/.fingerprint/ring-1fdaf026a3118ff6/lib-ring`
+
+Caused by:
+    No such file or directory (os error 2)
+
+Stack backtrace:
+   0: cargo_util::paths::read_bytes
+   1: cargo_util::paths::read
+   2: cargo::core::compiler::fingerprint::_compare_old_fingerprint
+   3: cargo::core::compiler::fingerprint::prepare_target
+   4: cargo::core::compiler::compile
+   5: cargo::core::compiler::compile
+   6: cargo::core::compiler::compile
+   7: cargo::core::compiler::compile
+   8: cargo::core::compiler::compile
+   9: <cargo::core::compiler::build_runner::BuildRunner>::compile
+  10: cargo::ops::cargo_compile::compile_ws
+  11: cargo::ops::cargo_compile::compile_with_exec
+  12: cargo::ops::cargo_compile::compile
+  13: cargo::commands::check::exec
+  14: <cargo::cli::Exec>::exec
+  15: cargo::main
+  16: std::sys::backtrace::__rust_begin_short_backtrace::<fn(), ()>
+  17: std::rt::lang_start::<()>::{closure#0}
+  18: <&dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe as core::ops::function::FnOnce<()>>::call_once
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/core/src/ops/function.rs:287:21
+  19: std::panicking::catch_unwind::do_call::<&dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe, i32>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panicking.rs:581:40
+  20: std::panicking::catch_unwind::<i32, &dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panicking.rs:544:19
+  21: std::panic::catch_unwind::<&dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe, i32>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panic.rs:359:14
+  22: std::rt::lang_start_internal::{closure#0}
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/rt.rs:175:24
+  23: std::panicking::catch_unwind::do_call::<std::rt::lang_start_internal::{closure#0}, isize>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panicking.rs:581:40
+  24: std::panicking::catch_unwind::<isize, std::rt::lang_start_internal::{closure#0}>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panicking.rs:544:19
+  25: std::panic::catch_unwind::<std::rt::lang_start_internal::{closure#0}, isize>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panic.rs:359:14
+  26: std::rt::lang_start_internal
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/rt.rs:171:5
+  27: main
+  28: <unknown>
+  29: __libc_start_main
+  30: <unknown>
+   0.141837850s  INFO prepare_target{force=false package_id=rustls-webpki v0.103.13 target="webpki"}: cargo::core::compiler::fingerprint: fingerprint error for rustls-webpki v0.103.13/Check { test: false }/TargetInner { ..: lib_target("webpki", ["lib"], "/home/amsterdan/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/rustls-webpki-0.103.13/src/lib.rs", Edition2021) }
+   0.141863048s  INFO prepare_target{force=false package_id=rustls-webpki v0.103.13 target="webpki"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/amsterdan/developer/workspace-axum/target/debug/.fingerprint/rustls-webpki-047b2696a7d73003/lib-webpki`
+
+Caused by:
+    No such file or directory (os error 2)
+
+Stack backtrace:
+   0: cargo_util::paths::read_bytes
+   1: cargo_util::paths::read
+   2: cargo::core::compiler::fingerprint::_compare_old_fingerprint
+   3: cargo::core::compiler::fingerprint::prepare_target
+   4: cargo::core::compiler::compile
+   5: cargo::core::compiler::compile
+   6: cargo::core::compiler::compile
+   7: cargo::core::compiler::compile
+   8: cargo::core::compiler::compile
+   9: <cargo::core::compiler::build_runner::BuildRunner>::compile
+  10: cargo::ops::cargo_compile::compile_ws
+  11: cargo::ops::cargo_compile::compile_with_exec
+  12: cargo::ops::cargo_compile::compile
+  13: cargo::commands::check::exec
+  14: <cargo::cli::Exec>::exec
+  15: cargo::main
+  16: std::sys::backtrace::__rust_begin_short_backtrace::<fn(), ()>
+  17: std::rt::lang_start::<()>::{closure#0}
+  18: <&dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe as core::ops::function::FnOnce<()>>::call_once
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/core/src/ops/function.rs:287:21
+  19: std::panicking::catch_unwind::do_call::<&dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe, i32>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panicking.rs:581:40
+  20: std::panicking::catch_unwind::<i32, &dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panicking.rs:544:19
+  21: std::panic::catch_unwind::<&dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe, i32>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panic.rs:359:14
+  22: std::rt::lang_start_internal::{closure#0}
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/rt.rs:175:24
+  23: std::panicking::catch_unwind::do_call::<std::rt::lang_start_internal::{closure#0}, isize>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panicking.rs:581:40
+  24: std::panicking::catch_unwind::<isize, std::rt::lang_start_internal::{closure#0}>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panicking.rs:544:19
+  25: std::panic::catch_unwind::<std::rt::lang_start_internal::{closure#0}, isize>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panic.rs:359:14
+  26: std::rt::lang_start_internal
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/rt.rs:171:5
+  27: main
+  28: <unknown>
+  29: __libc_start_main
+  30: <unknown>
+   0.150684709s  INFO prepare_target{force=false package_id=sqlx-postgres v0.8.6 target="sqlx_postgres"}: cargo::core::compiler::fingerprint: fingerprint error for sqlx-postgres v0.8.6/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("sqlx_postgres", ["lib"], "/home/amsterdan/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/sqlx-postgres-0.8.6/src/lib.rs", Edition2021) }
+   0.150724617s  INFO prepare_target{force=false package_id=sqlx-postgres v0.8.6 target="sqlx_postgres"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/amsterdan/developer/workspace-axum/target/debug/.fingerprint/sqlx-postgres-59714e3073eafa2f/lib-sqlx_postgres`
+
+Caused by:
+    No such file or directory (os error 2)
+
+Stack backtrace:
+   0: cargo_util::paths::read_bytes
+   1: cargo_util::paths::read
+   2: cargo::core::compiler::fingerprint::_compare_old_fingerprint
+   3: cargo::core::compiler::fingerprint::prepare_target
+   4: cargo::core::compiler::compile
+   5: cargo::core::compiler::compile
+   6: cargo::core::compiler::compile
+   7: <cargo::core::compiler::build_runner::BuildRunner>::compile
+   8: cargo::ops::cargo_compile::compile_ws
+   9: cargo::ops::cargo_compile::compile_with_exec
+  10: cargo::ops::cargo_compile::compile
+  11: cargo::commands::check::exec
+  12: <cargo::cli::Exec>::exec
+  13: cargo::main
+  14: std::sys::backtrace::__rust_begin_short_backtrace::<fn(), ()>
+  15: std::rt::lang_start::<()>::{closure#0}
+  16: <&dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe as core::ops::function::FnOnce<()>>::call_once
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/core/src/ops/function.rs:287:21
+  17: std::panicking::catch_unwind::do_call::<&dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe, i32>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panicking.rs:581:40
+  18: std::panicking::catch_unwind::<i32, &dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panicking.rs:544:19
+  19: std::panic::catch_unwind::<&dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe, i32>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panic.rs:359:14
+  20: std::rt::lang_start_internal::{closure#0}
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/rt.rs:175:24
+  21: std::panicking::catch_unwind::do_call::<std::rt::lang_start_internal::{closure#0}, isize>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panicking.rs:581:40
+  22: std::panicking::catch_unwind::<isize, std::rt::lang_start_internal::{closure#0}>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panicking.rs:544:19
+  23: std::panic::catch_unwind::<std::rt::lang_start_internal::{closure#0}, isize>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panic.rs:359:14
+  24: std::rt::lang_start_internal
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/rt.rs:171:5
+  25: main
+  26: <unknown>
+  27: __libc_start_main
+  28: <unknown>
+   0.151852642s  INFO prepare_target{force=false package_id=atoi v2.0.0 target="atoi"}: cargo::core::compiler::fingerprint: fingerprint error for atoi v2.0.0/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("atoi", ["lib"], "/home/amsterdan/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/atoi-2.0.0/src/lib.rs", Edition2021) }
+   0.151871987s  INFO prepare_target{force=false package_id=atoi v2.0.0 target="atoi"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/amsterdan/developer/workspace-axum/target/debug/.fingerprint/atoi-39006600c12403ac/lib-atoi`
+
+Caused by:
+    No such file or directory (os error 2)
+
+Stack backtrace:
+   0: cargo_util::paths::read_bytes
+   1: cargo_util::paths::read
+   2: cargo::core::compiler::fingerprint::_compare_old_fingerprint
+   3: cargo::core::compiler::fingerprint::prepare_target
+   4: cargo::core::compiler::compile
+   5: cargo::core::compiler::compile
+   6: cargo::core::compiler::compile
+   7: cargo::core::compiler::compile
+   8: <cargo::core::compiler::build_runner::BuildRunner>::compile
+   9: cargo::ops::cargo_compile::compile_ws
+  10: cargo::ops::cargo_compile::compile_with_exec
+  11: cargo::ops::cargo_compile::compile
+  12: cargo::commands::check::exec
+  13: <cargo::cli::Exec>::exec
+  14: cargo::main
+  15: std::sys::backtrace::__rust_begin_short_backtrace::<fn(), ()>
+  16: std::rt::lang_start::<()>::{closure#0}
+  17: <&dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe as core::ops::function::FnOnce<()>>::call_once
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/core/src/ops/function.rs:287:21
+  18: std::panicking::catch_unwind::do_call::<&dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe, i32>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panicking.rs:581:40
+  19: std::panicking::catch_unwind::<i32, &dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panicking.rs:544:19
+  20: std::panic::catch_unwind::<&dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe, i32>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panic.rs:359:14
+  21: std::rt::lang_start_internal::{closure#0}
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/rt.rs:175:24
+  22: std::panicking::catch_unwind::do_call::<std::rt::lang_start_internal::{closure#0}, isize>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panicking.rs:581:40
+  23: std::panicking::catch_unwind::<isize, std::rt::lang_start_internal::{closure#0}>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panicking.rs:544:19
+  24: std::panic::catch_unwind::<std::rt::lang_start_internal::{closure#0}, isize>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panic.rs:359:14
+  25: std::rt::lang_start_internal
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/rt.rs:171:5
+  26: main
+  27: <unknown>
+  28: __libc_start_main
+  29: <unknown>
+   0.152322641s  INFO prepare_target{force=false package_id=rand v0.8.6 target="rand"}: cargo::core::compiler::fingerprint: fingerprint error for rand v0.8.6/Check { test: false }/TargetInner { ..: lib_target("rand", ["lib"], "/home/amsterdan/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/rand-0.8.6/src/lib.rs", Edition2018) }
+   0.152331104s  INFO prepare_target{force=false package_id=rand v0.8.6 target="rand"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/amsterdan/developer/workspace-axum/target/debug/.fingerprint/rand-fb14bdadecf10518/lib-rand`
+
+Caused by:
+    No such file or directory (os error 2)
+
+Stack backtrace:
+   0: cargo_util::paths::read_bytes
+   1: cargo_util::paths::read
+   2: cargo::core::compiler::fingerprint::_compare_old_fingerprint
+   3: cargo::core::compiler::fingerprint::prepare_target
+   4: cargo::core::compiler::compile
+   5: cargo::core::compiler::compile
+   6: cargo::core::compiler::compile
+   7: cargo::core::compiler::compile
+   8: <cargo::core::compiler::build_runner::BuildRunner>::compile
+   9: cargo::ops::cargo_compile::compile_ws
+  10: cargo::ops::cargo_compile::compile_with_exec
+  11: cargo::ops::cargo_compile::compile
+  12: cargo::commands::check::exec
+  13: <cargo::cli::Exec>::exec
+  14: cargo::main
+  15: std::sys::backtrace::__rust_begin_short_backtrace::<fn(), ()>
+  16: std::rt::lang_start::<()>::{closure#0}
+  17: <&dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe as core::ops::function::FnOnce<()>>::call_once
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/core/src/ops/function.rs:287:21
+  18: std::panicking::catch_unwind::do_call::<&dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe, i32>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panicking.rs:581:40
+  19: std::panicking::catch_unwind::<i32, &dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panicking.rs:544:19
+  20: std::panic::catch_unwind::<&dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe, i32>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panic.rs:359:14
+  21: std::rt::lang_start_internal::{closure#0}
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/rt.rs:175:24
+  22: std::panicking::catch_unwind::do_call::<std::rt::lang_start_internal::{closure#0}, isize>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panicking.rs:581:40
+  23: std::panicking::catch_unwind::<isize, std::rt::lang_start_internal::{closure#0}>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panicking.rs:544:19
+  24: std::panic::catch_unwind::<std::rt::lang_start_internal::{closure#0}, isize>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panic.rs:359:14
+  25: std::rt::lang_start_internal
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/rt.rs:171:5
+  26: main
+  27: <unknown>
+  28: __libc_start_main
+  29: <unknown>
+   0.152921907s  INFO prepare_target{force=false package_id=module-08-database v0.1.0 (/home/amsterdan/developer/workspace-axum/module-08-database) target="module-08-database"}: cargo::core::compiler::fingerprint: fingerprint error for module-08-database v0.1.0 (/home/amsterdan/developer/workspace-axum/module-08-database)/Check { test: true }/TargetInner { name: "module-08-database", doc: true, ..: with_path("/home/amsterdan/developer/workspace-axum/module-08-database/src/main.rs", Edition2024) }
+   0.152929204s  INFO prepare_target{force=false package_id=module-08-database v0.1.0 (/home/amsterdan/developer/workspace-axum/module-08-database) target="module-08-database"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/amsterdan/developer/workspace-axum/target/debug/.fingerprint/module-08-database-fe541338da459752/test-bin-module-08-database`
+
+Caused by:
+    No such file or directory (os error 2)
+
+Stack backtrace:
+   0: cargo_util::paths::read_bytes
+   1: cargo_util::paths::read
+   2: cargo::core::compiler::fingerprint::_compare_old_fingerprint
+   3: cargo::core::compiler::fingerprint::prepare_target
+   4: cargo::core::compiler::compile
+   5: <cargo::core::compiler::build_runner::BuildRunner>::compile
+   6: cargo::ops::cargo_compile::compile_ws
+   7: cargo::ops::cargo_compile::compile_with_exec
+   8: cargo::ops::cargo_compile::compile
+   9: cargo::commands::check::exec
+  10: <cargo::cli::Exec>::exec
+  11: cargo::main
+  12: std::sys::backtrace::__rust_begin_short_backtrace::<fn(), ()>
+  13: std::rt::lang_start::<()>::{closure#0}
+  14: <&dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe as core::ops::function::FnOnce<()>>::call_once
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/core/src/ops/function.rs:287:21
+  15: std::panicking::catch_unwind::do_call::<&dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe, i32>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panicking.rs:581:40
+  16: std::panicking::catch_unwind::<i32, &dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panicking.rs:544:19
+  17: std::panic::catch_unwind::<&dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe, i32>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panic.rs:359:14
+  18: std::rt::lang_start_internal::{closure#0}
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/rt.rs:175:24
+  19: std::panicking::catch_unwind::do_call::<std::rt::lang_start_internal::{closure#0}, isize>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panicking.rs:581:40
+  20: std::panicking::catch_unwind::<isize, std::rt::lang_start_internal::{closure#0}>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panicking.rs:544:19
+  21: std::panic::catch_unwind::<std::rt::lang_start_internal::{closure#0}, isize>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panic.rs:359:14
+  22: std::rt::lang_start_internal
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/rt.rs:171:5
+  23: main
+  24: <unknown>
+  25: __libc_start_main
+  26: <unknown>
+   0.153954699s  INFO prepare_target{force=false package_id=module-09-auth v0.1.0 (/home/amsterdan/developer/workspace-axum/module-09-auth) target="module-09-auth"}: cargo::core::compiler::fingerprint: fingerprint error for module-09-auth v0.1.0 (/home/amsterdan/developer/workspace-axum/module-09-auth)/Check { test: false }/TargetInner { name: "module-09-auth", doc: true, ..: with_path("/home/amsterdan/developer/workspace-axum/module-09-auth/src/main.rs", Edition2024) }
+   0.153965009s  INFO prepare_target{force=false package_id=module-09-auth v0.1.0 (/home/amsterdan/developer/workspace-axum/module-09-auth) target="module-09-auth"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/amsterdan/developer/workspace-axum/target/debug/.fingerprint/module-09-auth-fcac5892de65effa/bin-module-09-auth`
+
+Caused by:
+    No such file or directory (os error 2)
+
+Stack backtrace:
+   0: cargo_util::paths::read_bytes
+   1: cargo_util::paths::read
+   2: cargo::core::compiler::fingerprint::_compare_old_fingerprint
+   3: cargo::core::compiler::fingerprint::prepare_target
+   4: cargo::core::compiler::compile
+   5: <cargo::core::compiler::build_runner::BuildRunner>::compile
+   6: cargo::ops::cargo_compile::compile_ws
+   7: cargo::ops::cargo_compile::compile_with_exec
+   8: cargo::ops::cargo_compile::compile
+   9: cargo::commands::check::exec
+  10: <cargo::cli::Exec>::exec
+  11: cargo::main
+  12: std::sys::backtrace::__rust_begin_short_backtrace::<fn(), ()>
+  13: std::rt::lang_start::<()>::{closure#0}
+  14: <&dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe as core::ops::function::FnOnce<()>>::call_once
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/core/src/ops/function.rs:287:21
+  15: std::panicking::catch_unwind::do_call::<&dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe, i32>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panicking.rs:581:40
+  16: std::panicking::catch_unwind::<i32, &dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panicking.rs:544:19
+  17: std::panic::catch_unwind::<&dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe, i32>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panic.rs:359:14
+  18: std::rt::lang_start_internal::{closure#0}
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/rt.rs:175:24
+  19: std::panicking::catch_unwind::do_call::<std::rt::lang_start_internal::{closure#0}, isize>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panicking.rs:581:40
+  20: std::panicking::catch_unwind::<isize, std::rt::lang_start_internal::{closure#0}>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panicking.rs:544:19
+  21: std::panic::catch_unwind::<std::rt::lang_start_internal::{closure#0}, isize>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panic.rs:359:14
+  22: std::rt::lang_start_internal
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/rt.rs:171:5
+  23: main
+  24: <unknown>
+  25: __libc_start_main
+  26: <unknown>
+   0.154432068s  INFO prepare_target{force=false package_id=argon2 v0.5.3 target="argon2"}: cargo::core::compiler::fingerprint: fingerprint error for argon2 v0.5.3/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("argon2", ["lib"], "/home/amsterdan/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/argon2-0.5.3/src/lib.rs", Edition2021) }
+   0.154442917s  INFO prepare_target{force=false package_id=argon2 v0.5.3 target="argon2"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/amsterdan/developer/workspace-axum/target/debug/.fingerprint/argon2-761b0dca016e27e8/lib-argon2`
+
+Caused by:
+    No such file or directory (os error 2)
+
+Stack backtrace:
+   0: cargo_util::paths::read_bytes
+   1: cargo_util::paths::read
+   2: cargo::core::compiler::fingerprint::_compare_old_fingerprint
+   3: cargo::core::compiler::fingerprint::prepare_target
+   4: cargo::core::compiler::compile
+   5: cargo::core::compiler::compile
+   6: <cargo::core::compiler::build_runner::BuildRunner>::compile
+   7: cargo::ops::cargo_compile::compile_ws
+   8: cargo::ops::cargo_compile::compile_with_exec
+   9: cargo::ops::cargo_compile::compile
+  10: cargo::commands::check::exec
+  11: <cargo::cli::Exec>::exec
+  12: cargo::main
+  13: std::sys::backtrace::__rust_begin_short_backtrace::<fn(), ()>
+  14: std::rt::lang_start::<()>::{closure#0}
+  15: <&dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe as core::ops::function::FnOnce<()>>::call_once
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/core/src/ops/function.rs:287:21
+  16: std::panicking::catch_unwind::do_call::<&dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe, i32>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panicking.rs:581:40
+  17: std::panicking::catch_unwind::<i32, &dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panicking.rs:544:19
+  18: std::panic::catch_unwind::<&dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe, i32>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panic.rs:359:14
+  19: std::rt::lang_start_internal::{closure#0}
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/rt.rs:175:24
+  20: std::panicking::catch_unwind::do_call::<std::rt::lang_start_internal::{closure#0}, isize>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panicking.rs:581:40
+  21: std::panicking::catch_unwind::<isize, std::rt::lang_start_internal::{closure#0}>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panicking.rs:544:19
+  22: std::panic::catch_unwind::<std::rt::lang_start_internal::{closure#0}, isize>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panic.rs:359:14
+  23: std::rt::lang_start_internal
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/rt.rs:171:5
+  24: main
+  25: <unknown>
+  26: __libc_start_main
+  27: <unknown>
+   0.154768975s  INFO prepare_target{force=false package_id=jsonwebtoken v9.3.1 target="jsonwebtoken"}: cargo::core::compiler::fingerprint: fingerprint error for jsonwebtoken v9.3.1/Check { test: false }/TargetInner { ..: lib_target("jsonwebtoken", ["lib"], "/home/amsterdan/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/jsonwebtoken-9.3.1/src/lib.rs", Edition2021) }
+   0.154774779s  INFO prepare_target{force=false package_id=jsonwebtoken v9.3.1 target="jsonwebtoken"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/amsterdan/developer/workspace-axum/target/debug/.fingerprint/jsonwebtoken-2cc3249681982f8f/lib-jsonwebtoken`
+
+Caused by:
+    No such file or directory (os error 2)
+
+Stack backtrace:
+   0: cargo_util::paths::read_bytes
+   1: cargo_util::paths::read
+   2: cargo::core::compiler::fingerprint::_compare_old_fingerprint
+   3: cargo::core::compiler::fingerprint::prepare_target
+   4: cargo::core::compiler::compile
+   5: cargo::core::compiler::compile
+   6: <cargo::core::compiler::build_runner::BuildRunner>::compile
+   7: cargo::ops::cargo_compile::compile_ws
+   8: cargo::ops::cargo_compile::compile_with_exec
+   9: cargo::ops::cargo_compile::compile
+  10: cargo::commands::check::exec
+  11: <cargo::cli::Exec>::exec
+  12: cargo::main
+  13: std::sys::backtrace::__rust_begin_short_backtrace::<fn(), ()>
+  14: std::rt::lang_start::<()>::{closure#0}
+  15: <&dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe as core::ops::function::FnOnce<()>>::call_once
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/core/src/ops/function.rs:287:21
+  16: std::panicking::catch_unwind::do_call::<&dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe, i32>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panicking.rs:581:40
+  17: std::panicking::catch_unwind::<i32, &dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panicking.rs:544:19
+  18: std::panic::catch_unwind::<&dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe, i32>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panic.rs:359:14
+  19: std::rt::lang_start_internal::{closure#0}
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/rt.rs:175:24
+  20: std::panicking::catch_unwind::do_call::<std::rt::lang_start_internal::{closure#0}, isize>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panicking.rs:581:40
+  21: std::panicking::catch_unwind::<isize, std::rt::lang_start_internal::{closure#0}>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panicking.rs:544:19
+  22: std::panic::catch_unwind::<std::rt::lang_start_internal::{closure#0}, isize>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panic.rs:359:14
+  23: std::rt::lang_start_internal
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/rt.rs:171:5
+  24: main
+  25: <unknown>
+  26: __libc_start_main
+  27: <unknown>
+   0.155141767s  INFO prepare_target{force=false package_id=simple_asn1 v0.6.4 target="simple_asn1"}: cargo::core::compiler::fingerprint: fingerprint error for simple_asn1 v0.6.4/Check { test: false }/TargetInner { ..: lib_target("simple_asn1", ["lib"], "/home/amsterdan/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/simple_asn1-0.6.4/src/lib.rs", Edition2018) }
+   0.155148506s  INFO prepare_target{force=false package_id=simple_asn1 v0.6.4 target="simple_asn1"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/amsterdan/developer/workspace-axum/target/debug/.fingerprint/simple_asn1-93d34d8d320b2be8/lib-simple_asn1`
+
+Caused by:
+    No such file or directory (os error 2)
+
+Stack backtrace:
+   0: cargo_util::paths::read_bytes
+   1: cargo_util::paths::read
+   2: cargo::core::compiler::fingerprint::_compare_old_fingerprint
+   3: cargo::core::compiler::fingerprint::prepare_target
+   4: cargo::core::compiler::compile
+   5: cargo::core::compiler::compile
+   6: cargo::core::compiler::compile
+   7: <cargo::core::compiler::build_runner::BuildRunner>::compile
+   8: cargo::ops::cargo_compile::compile_ws
+   9: cargo::ops::cargo_compile::compile_with_exec
+  10: cargo::ops::cargo_compile::compile
+  11: cargo::commands::check::exec
+  12: <cargo::cli::Exec>::exec
+  13: cargo::main
+  14: std::sys::backtrace::__rust_begin_short_backtrace::<fn(), ()>
+  15: std::rt::lang_start::<()>::{closure#0}
+  16: <&dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe as core::ops::function::FnOnce<()>>::call_once
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/core/src/ops/function.rs:287:21
+  17: std::panicking::catch_unwind::do_call::<&dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe, i32>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panicking.rs:581:40
+  18: std::panicking::catch_unwind::<i32, &dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panicking.rs:544:19
+  19: std::panic::catch_unwind::<&dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe, i32>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panic.rs:359:14
+  20: std::rt::lang_start_internal::{closure#0}
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/rt.rs:175:24
+  21: std::panicking::catch_unwind::do_call::<std::rt::lang_start_internal::{closure#0}, isize>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panicking.rs:581:40
+  22: std::panicking::catch_unwind::<isize, std::rt::lang_start_internal::{closure#0}>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panicking.rs:544:19
+  23: std::panic::catch_unwind::<std::rt::lang_start_internal::{closure#0}, isize>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panic.rs:359:14
+  24: std::rt::lang_start_internal
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/rt.rs:171:5
+  25: main
+  26: <unknown>
+  27: __libc_start_main
+  28: <unknown>
+   0.155327281s  INFO prepare_target{force=false package_id=num-bigint v0.4.6 target="num_bigint"}: cargo::core::compiler::fingerprint: fingerprint error for num-bigint v0.4.6/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("num_bigint", ["lib"], "/home/amsterdan/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/num-bigint-0.4.6/src/lib.rs", Edition2021) }
+   0.155331806s  INFO prepare_target{force=false package_id=num-bigint v0.4.6 target="num_bigint"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/amsterdan/developer/workspace-axum/target/debug/.fingerprint/num-bigint-18423a34d8f7f1ea/lib-num_bigint`
+
+Caused by:
+    No such file or directory (os error 2)
+
+Stack backtrace:
+   0: cargo_util::paths::read_bytes
+   1: cargo_util::paths::read
+   2: cargo::core::compiler::fingerprint::_compare_old_fingerprint
+   3: cargo::core::compiler::fingerprint::prepare_target
+   4: cargo::core::compiler::compile
+   5: cargo::core::compiler::compile
+   6: cargo::core::compiler::compile
+   7: cargo::core::compiler::compile
+   8: <cargo::core::compiler::build_runner::BuildRunner>::compile
+   9: cargo::ops::cargo_compile::compile_ws
+  10: cargo::ops::cargo_compile::compile_with_exec
+  11: cargo::ops::cargo_compile::compile
+  12: cargo::commands::check::exec
+  13: <cargo::cli::Exec>::exec
+  14: cargo::main
+  15: std::sys::backtrace::__rust_begin_short_backtrace::<fn(), ()>
+  16: std::rt::lang_start::<()>::{closure#0}
+  17: <&dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe as core::ops::function::FnOnce<()>>::call_once
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/core/src/ops/function.rs:287:21
+  18: std::panicking::catch_unwind::do_call::<&dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe, i32>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panicking.rs:581:40
+  19: std::panicking::catch_unwind::<i32, &dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panicking.rs:544:19
+  20: std::panic::catch_unwind::<&dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe, i32>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panic.rs:359:14
+  21: std::rt::lang_start_internal::{closure#0}
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/rt.rs:175:24
+  22: std::panicking::catch_unwind::do_call::<std::rt::lang_start_internal::{closure#0}, isize>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panicking.rs:581:40
+  23: std::panicking::catch_unwind::<isize, std::rt::lang_start_internal::{closure#0}>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panicking.rs:544:19
+  24: std::panic::catch_unwind::<std::rt::lang_start_internal::{closure#0}, isize>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panic.rs:359:14
+  25: std::rt::lang_start_internal
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/rt.rs:171:5
+  26: main
+  27: <unknown>
+  28: __libc_start_main
+  29: <unknown>
+   0.155464448s  INFO prepare_target{force=false package_id=num-integer v0.1.46 target="num_integer"}: cargo::core::compiler::fingerprint: fingerprint error for num-integer v0.1.46/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("num_integer", ["lib"], "/home/amsterdan/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/num-integer-0.1.46/src/lib.rs", Edition2018) }
+   0.155468506s  INFO prepare_target{force=false package_id=num-integer v0.1.46 target="num_integer"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/amsterdan/developer/workspace-axum/target/debug/.fingerprint/num-integer-3ec4fc61aac55927/lib-num_integer`
+
+Caused by:
+    No such file or directory (os error 2)
+
+Stack backtrace:
+   0: cargo_util::paths::read_bytes
+   1: cargo_util::paths::read
+   2: cargo::core::compiler::fingerprint::_compare_old_fingerprint
+   3: cargo::core::compiler::fingerprint::prepare_target
+   4: cargo::core::compiler::compile
+   5: cargo::core::compiler::compile
+   6: cargo::core::compiler::compile
+   7: cargo::core::compiler::compile
+   8: cargo::core::compiler::compile
+   9: <cargo::core::compiler::build_runner::BuildRunner>::compile
+  10: cargo::ops::cargo_compile::compile_ws
+  11: cargo::ops::cargo_compile::compile_with_exec
+  12: cargo::ops::cargo_compile::compile
+  13: cargo::commands::check::exec
+  14: <cargo::cli::Exec>::exec
+  15: cargo::main
+  16: std::sys::backtrace::__rust_begin_short_backtrace::<fn(), ()>
+  17: std::rt::lang_start::<()>::{closure#0}
+  18: <&dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe as core::ops::function::FnOnce<()>>::call_once
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/core/src/ops/function.rs:287:21
+  19: std::panicking::catch_unwind::do_call::<&dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe, i32>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panicking.rs:581:40
+  20: std::panicking::catch_unwind::<i32, &dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panicking.rs:544:19
+  21: std::panic::catch_unwind::<&dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe, i32>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panic.rs:359:14
+  22: std::rt::lang_start_internal::{closure#0}
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/rt.rs:175:24
+  23: std::panicking::catch_unwind::do_call::<std::rt::lang_start_internal::{closure#0}, isize>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panicking.rs:581:40
+  24: std::panicking::catch_unwind::<isize, std::rt::lang_start_internal::{closure#0}>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panicking.rs:544:19
+  25: std::panic::catch_unwind::<std::rt::lang_start_internal::{closure#0}, isize>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panic.rs:359:14
+  26: std::rt::lang_start_internal
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/rt.rs:171:5
+  27: main
+  28: <unknown>
+  29: __libc_start_main
+  30: <unknown>
+   0.155577675s  INFO prepare_target{force=false package_id=time v0.3.47 target="time"}: cargo::core::compiler::fingerprint: fingerprint error for time v0.3.47/Check { test: false }/TargetInner { benched: false, ..: lib_target("time", ["lib"], "/home/amsterdan/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/time-0.3.47/src/lib.rs", Edition2024) }
+   0.155581858s  INFO prepare_target{force=false package_id=time v0.3.47 target="time"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/amsterdan/developer/workspace-axum/target/debug/.fingerprint/time-55fc0fde3fa4a847/lib-time`
+
+Caused by:
+    No such file or directory (os error 2)
+
+Stack backtrace:
+   0: cargo_util::paths::read_bytes
+   1: cargo_util::paths::read
+   2: cargo::core::compiler::fingerprint::_compare_old_fingerprint
+   3: cargo::core::compiler::fingerprint::prepare_target
+   4: cargo::core::compiler::compile
+   5: cargo::core::compiler::compile
+   6: cargo::core::compiler::compile
+   7: cargo::core::compiler::compile
+   8: <cargo::core::compiler::build_runner::BuildRunner>::compile
+   9: cargo::ops::cargo_compile::compile_ws
+  10: cargo::ops::cargo_compile::compile_with_exec
+  11: cargo::ops::cargo_compile::compile
+  12: cargo::commands::check::exec
+  13: <cargo::cli::Exec>::exec
+  14: cargo::main
+  15: std::sys::backtrace::__rust_begin_short_backtrace::<fn(), ()>
+  16: std::rt::lang_start::<()>::{closure#0}
+  17: <&dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe as core::ops::function::FnOnce<()>>::call_once
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/core/src/ops/function.rs:287:21
+  18: std::panicking::catch_unwind::do_call::<&dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe, i32>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panicking.rs:581:40
+  19: std::panicking::catch_unwind::<i32, &dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panicking.rs:544:19
+  20: std::panic::catch_unwind::<&dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe, i32>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panic.rs:359:14
+  21: std::rt::lang_start_internal::{closure#0}
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/rt.rs:175:24
+  22: std::panicking::catch_unwind::do_call::<std::rt::lang_start_internal::{closure#0}, isize>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panicking.rs:581:40
+  23: std::panicking::catch_unwind::<isize, std::rt::lang_start_internal::{closure#0}>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panicking.rs:544:19
+  24: std::panic::catch_unwind::<std::rt::lang_start_internal::{closure#0}, isize>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panic.rs:359:14
+  25: std::rt::lang_start_internal
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/rt.rs:171:5
+  26: main
+  27: <unknown>
+  28: __libc_start_main
+  29: <unknown>
+   0.155762581s  INFO prepare_target{force=false package_id=deranged v0.5.8 target="deranged"}: cargo::core::compiler::fingerprint: fingerprint error for deranged v0.5.8/Check { test: false }/TargetInner { ..: lib_target("deranged", ["lib"], "/home/amsterdan/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/deranged-0.5.8/src/lib.rs", Edition2021) }
+   0.155766303s  INFO prepare_target{force=false package_id=deranged v0.5.8 target="deranged"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/amsterdan/developer/workspace-axum/target/debug/.fingerprint/deranged-061619203ca0f07a/lib-deranged`
+
+Caused by:
+    No such file or directory (os error 2)
+
+Stack backtrace:
+   0: cargo_util::paths::read_bytes
+   1: cargo_util::paths::read
+   2: cargo::core::compiler::fingerprint::_compare_old_fingerprint
+   3: cargo::core::compiler::fingerprint::prepare_target
+   4: cargo::core::compiler::compile
+   5: cargo::core::compiler::compile
+   6: cargo::core::compiler::compile
+   7: cargo::core::compiler::compile
+   8: cargo::core::compiler::compile
+   9: <cargo::core::compiler::build_runner::BuildRunner>::compile
+  10: cargo::ops::cargo_compile::compile_ws
+  11: cargo::ops::cargo_compile::compile_with_exec
+  12: cargo::ops::cargo_compile::compile
+  13: cargo::commands::check::exec
+  14: <cargo::cli::Exec>::exec
+  15: cargo::main
+  16: std::sys::backtrace::__rust_begin_short_backtrace::<fn(), ()>
+  17: std::rt::lang_start::<()>::{closure#0}
+  18: <&dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe as core::ops::function::FnOnce<()>>::call_once
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/core/src/ops/function.rs:287:21
+  19: std::panicking::catch_unwind::do_call::<&dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe, i32>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panicking.rs:581:40
+  20: std::panicking::catch_unwind::<i32, &dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panicking.rs:544:19
+  21: std::panic::catch_unwind::<&dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe, i32>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panic.rs:359:14
+  22: std::rt::lang_start_internal::{closure#0}
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/rt.rs:175:24
+  23: std::panicking::catch_unwind::do_call::<std::rt::lang_start_internal::{closure#0}, isize>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panicking.rs:581:40
+  24: std::panicking::catch_unwind::<isize, std::rt::lang_start_internal::{closure#0}>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panicking.rs:544:19
+  25: std::panic::catch_unwind::<std::rt::lang_start_internal::{closure#0}, isize>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panic.rs:359:14
+  26: std::rt::lang_start_internal
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/rt.rs:171:5
+  27: main
+  28: <unknown>
+  29: __libc_start_main
+  30: <unknown>
+   0.156204759s  INFO prepare_target{force=false package_id=module-09-auth v0.1.0 (/home/amsterdan/developer/workspace-axum/module-09-auth) target="module-09-auth"}: cargo::core::compiler::fingerprint: fingerprint error for module-09-auth v0.1.0 (/home/amsterdan/developer/workspace-axum/module-09-auth)/Check { test: true }/TargetInner { name: "module-09-auth", doc: true, ..: with_path("/home/amsterdan/developer/workspace-axum/module-09-auth/src/main.rs", Edition2024) }
+   0.156215365s  INFO prepare_target{force=false package_id=module-09-auth v0.1.0 (/home/amsterdan/developer/workspace-axum/module-09-auth) target="module-09-auth"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/amsterdan/developer/workspace-axum/target/debug/.fingerprint/module-09-auth-2ac40e368911cdaf/test-bin-module-09-auth`
+
+Caused by:
+    No such file or directory (os error 2)
+
+Stack backtrace:
+   0: cargo_util::paths::read_bytes
+   1: cargo_util::paths::read
+   2: cargo::core::compiler::fingerprint::_compare_old_fingerprint
+   3: cargo::core::compiler::fingerprint::prepare_target
+   4: cargo::core::compiler::compile
+   5: <cargo::core::compiler::build_runner::BuildRunner>::compile
+   6: cargo::ops::cargo_compile::compile_ws
+   7: cargo::ops::cargo_compile::compile_with_exec
+   8: cargo::ops::cargo_compile::compile
+   9: cargo::commands::check::exec
+  10: <cargo::cli::Exec>::exec
+  11: cargo::main
+  12: std::sys::backtrace::__rust_begin_short_backtrace::<fn(), ()>
+  13: std::rt::lang_start::<()>::{closure#0}
+  14: <&dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe as core::ops::function::FnOnce<()>>::call_once
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/core/src/ops/function.rs:287:21
+  15: std::panicking::catch_unwind::do_call::<&dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe, i32>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panicking.rs:581:40
+  16: std::panicking::catch_unwind::<i32, &dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panicking.rs:544:19
+  17: std::panic::catch_unwind::<&dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe, i32>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panic.rs:359:14
+  18: std::rt::lang_start_internal::{closure#0}
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/rt.rs:175:24
+  19: std::panicking::catch_unwind::do_call::<std::rt::lang_start_internal::{closure#0}, isize>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panicking.rs:581:40
+  20: std::panicking::catch_unwind::<isize, std::rt::lang_start_internal::{closure#0}>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panicking.rs:544:19
+  21: std::panic::catch_unwind::<std::rt::lang_start_internal::{closure#0}, isize>
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/panic.rs:359:14
+  22: std::rt::lang_start_internal
+             at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/rt.rs:171:5
+  23: main
+  24: <unknown>
+  25: __libc_start_main
+  26: <unknown>
+    Checking num-traits v0.2.19
+    Checking ring v0.17.14
+    Checking rand v0.8.6
+    Checking deranged v0.5.8
+    Checking argon2 v0.5.3
+    Checking chrono v0.4.44
+    Checking num-integer v0.1.46
+    Checking atoi v2.0.0
+    Checking num-bigint v0.4.6
+    Checking time v0.3.47
+    Checking rustls-webpki v0.103.13
+    Checking rustls v0.23.40
+    Checking simple_asn1 v0.6.4
+    Checking jsonwebtoken v9.3.1
+    Checking module-09-auth v0.1.0 (/home/amsterdan/developer/workspace-axum/module-09-auth)
+    Checking sqlx-core v0.8.6
+    Checking sqlx-postgres v0.8.6
+    Checking sqlx v0.8.6
     Checking module-08-database v0.1.0 (/home/amsterdan/developer/workspace-axum/module-08-database)
-    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.23s
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 6.49s
