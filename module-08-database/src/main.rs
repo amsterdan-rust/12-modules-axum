@@ -29,6 +29,22 @@ async fn create_pool() -> PgPool {
         .expect("failed to connect to database")
 }
 
+async fn run_migrations(pool: &PgPool) {
+    sqlx::query(
+        r#"
+        CREATE TABLE IF NOT EXISTS users (
+            id UUID PRIMARY KEY,
+            name TEXT NOT NULL,
+            email TEXT NOT NULL UNIQUE,
+            created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+        )
+        "#,
+    )
+    .execute(pool)
+    .await
+    .expect("failed to create users table");
+}
+
 fn app(pool: PgPool) -> Router {
     Router::new()
         // Teste:
@@ -41,6 +57,7 @@ fn app(pool: PgPool) -> Router {
 #[tokio::main]
 async fn main() {
     let pool = create_pool().await;
+    run_migrations(&pool).await;
 
     let listener = tokio::net::TcpListener::bind("0.0.0.0:8000")
         .await
