@@ -1,3 +1,4 @@
+use argon2::{Argon2, PasswordHasher, password_hash::SaltString};
 use axum::{Json, Router, extract::State, response::IntoResponse, routing::post};
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
@@ -27,11 +28,23 @@ struct LoginResponse {
     email: String,
 }
 
+fn hash_password(password: &str) -> String {
+    let salt = SaltString::generate(&mut rand::rngs::OsRng);
+
+    Argon2::default()
+        .hash_password(password.as_bytes(), &salt)
+        .unwrap()
+        .to_string()
+}
+
 async fn register(Json(input): Json<RegisterRequest>) -> impl IntoResponse {
+    let hashed_password = hash_password(&input.password);
+
     Json(serde_json::json!({
         "message": "User registered",
         "name": input.name,
-        "email": input.email
+        "email": input.email,
+        "password_hash": hashed_password
     }))
 }
 
