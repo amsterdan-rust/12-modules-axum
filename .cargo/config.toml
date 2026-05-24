@@ -19,3 +19,6 @@ r06 = "run -p module-06-middleware"
 
 c07 = "check -p module-07-errors"
 r07 = "run -p module-07-errors"
+
+c08 = "check -p module-08-database"
+r08 = "run -p module-08-database"

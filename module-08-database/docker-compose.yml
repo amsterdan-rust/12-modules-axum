@@ -1,0 +1,15 @@
+services:
+  postgres:
+    image: postgres:18
+    container_name: axum-course-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: axum_course
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./postgres-data:/var/lib/postgresql
+
+# docker compose logs -f postgres
