@@ -150,6 +150,27 @@ async fn update_user(
     Ok(Json(user))
 }
 
+async fn delete_user(
+    State(pool): State<PgPool>,
+    Path(id): Path<Uuid>,
+) -> Result<StatusCode, DbError> {
+    let result = sqlx::query(
+        r#"
+        DELETE FROM users
+        WHERE id = $1
+        "#,
+    )
+    .bind(id)
+    .execute(&pool)
+    .await?;
+
+    if result.rows_affected() == 0 {
+        Err(DbError::NotFound)
+    } else {
+        Ok(StatusCode::NO_CONTENT)
+    }
+}
+
 async fn create_pool() -> PgPool {
     dotenvy::dotenv().ok();
 
@@ -208,7 +229,10 @@ fn app(pool: PgPool) -> Router {
         // UUID inexistente:
         //
         // curl -i -w '\n\n' http://localhost:8000/users/00000000-0000-0000-0000-000000000000
-        .route("/users/{id}", get(get_user).put(update_user))
+        .route(
+            "/users/{id}",
+            get(get_user).put(update_user).delete(delete_user),
+        )
         .with_state(pool)
 }
 
