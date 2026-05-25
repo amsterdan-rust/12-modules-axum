@@ -1,7 +1,14 @@
 use argon2::{Argon2, PasswordHash, PasswordHasher, PasswordVerifier, password_hash::SaltString};
-use axum::{Json, Router, extract::State, http::StatusCode, response::IntoResponse, routing::post};
+use axum::{
+    Json, Router,
+    extract::{Request, State},
+    http::StatusCode,
+    middleware::{self, Next},
+    response::{IntoResponse, Response},
+    routing::{get, post},
+};
 use chrono::{Duration, Utc};
-use jsonwebtoken::{EncodingKey, Header, encode};
+use jsonwebtoken::{DecodingKey, EncodingKey, Header, Validation, decode, encode};
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 
@@ -35,6 +42,12 @@ struct LoginRequest {
 struct LoginResponse {
     token: String,
     expires_in: i64,
+}
+
+#[derive(Debug, Clone)]
+struct CurrentUser {
+    id: String,
+    role: String,
 }
 
 fn hash_password(password: &str) -> String {
@@ -73,6 +86,40 @@ fn create_token(config: &AuthConfig, user_id: &str, role: &str) -> Result<String
     .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)
 }
 
+fn verify_token(config: &AuthConfig, token: &str) -> Result<Claims, StatusCode> {
+    decode::<Claims>(
+        token,
+        &DecodingKey::from_secret(config.jwt_secret.as_bytes()),
+        &Validation::default(),
+    )
+    .map(|data| data.claims)
+    .map_err(|_| StatusCode::UNAUTHORIZED)
+}
+
+async fn auth_middleware(
+    State(config): State<Arc<AuthConfig>>,
+    mut request: Request,
+    next: Next,
+) -> Result<Response, StatusCode> {
+    let token = request
+        .headers()
+        .get("Authorization")
+        .and_then(|value| value.to_str().ok())
+        .and_then(|value| value.strip_prefix("Bearer "))
+        .ok_or(StatusCode::UNAUTHORIZED)?;
+
+    let claims = verify_token(&config, token)?;
+
+    let current_user = CurrentUser {
+        id: claims.sub,
+        role: claims.role,
+    };
+
+    request.extensions_mut().insert(current_user);
+
+    Ok(next.run(request).await)
+}
+
 async fn register(Json(input): Json<RegisterRequest>) -> impl IntoResponse {
     let hashed_password = hash_password(&input.password);
 
@@ -109,6 +156,14 @@ async fn login(
     }
 }
 
+async fn me(axum::Extension(user): axum::Extension<CurrentUser>) -> impl IntoResponse {
+    Json(serde_json::json!({
+        "message": "Access granted",
+        "user_id": user.id,
+        "role": user.role
+    }))
+}
+
 #[tokio::main]
 async fn main() {
     let config = Arc::new(AuthConfig {
@@ -116,9 +171,18 @@ async fn main() {
         jwt_expiry_hours: 24,
     });
 
+    let protected_routes =
+        Router::new()
+            .route("/me", get(me))
+            .route_layer(middleware::from_fn_with_state(
+                config.clone(),
+                auth_middleware,
+            ));
+
     let app = Router::new()
         .route("/register", post(register))
         .route("/login", post(login))
+        .nest("/protected", protected_routes)
         .with_state(config);
 
     let listener = tokio::net::TcpListener::bind("0.0.0.0:8000").await.unwrap();
