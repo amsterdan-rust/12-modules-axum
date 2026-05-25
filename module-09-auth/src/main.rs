@@ -164,6 +164,19 @@ async fn me(axum::Extension(user): axum::Extension<CurrentUser>) -> impl IntoRes
     }))
 }
 
+async fn admin(axum::Extension(user): axum::Extension<CurrentUser>) -> impl IntoResponse {
+    if user.role != "admin" {
+        return (StatusCode::FORBIDDEN, "Admin access required").into_response();
+    }
+
+    Json(serde_json::json!({
+        "message": "Admin area",
+        "user_id": user.id,
+        "role": user.role
+    }))
+    .into_response()
+}
+
 #[tokio::main]
 async fn main() {
     let config = Arc::new(AuthConfig {
@@ -171,13 +184,13 @@ async fn main() {
         jwt_expiry_hours: 24,
     });
 
-    let protected_routes =
-        Router::new()
-            .route("/me", get(me))
-            .route_layer(middleware::from_fn_with_state(
-                config.clone(),
-                auth_middleware,
-            ));
+    let protected_routes = Router::new()
+        .route("/me", get(me))
+        .route("/admin", get(admin))
+        .route_layer(middleware::from_fn_with_state(
+            config.clone(),
+            auth_middleware,
+        ));
 
     let app = Router::new()
         .route("/register", post(register))
