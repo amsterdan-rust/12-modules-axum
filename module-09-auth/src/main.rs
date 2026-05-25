@@ -44,10 +44,27 @@ struct LoginResponse {
     expires_in: i64,
 }
 
+#[derive(Debug, Serialize)]
+struct ErrorResponse {
+    error: String,
+    code: u16,
+}
+
 #[derive(Debug, Clone)]
 struct CurrentUser {
     id: String,
     role: String,
+}
+
+fn json_error(status: StatusCode, message: &str) -> Response {
+    (
+        status,
+        Json(ErrorResponse {
+            error: message.to_string(),
+            code: status.as_u16(),
+        }),
+    )
+        .into_response()
 }
 
 fn hash_password(password: &str) -> String {
@@ -100,15 +117,21 @@ async fn auth_middleware(
     State(config): State<Arc<AuthConfig>>,
     mut request: Request,
     next: Next,
-) -> Result<Response, StatusCode> {
-    let token = request
+) -> Result<Response, Response> {
+    let Some(token) = request
         .headers()
         .get("Authorization")
         .and_then(|value| value.to_str().ok())
         .and_then(|value| value.strip_prefix("Bearer "))
-        .ok_or(StatusCode::UNAUTHORIZED)?;
+    else {
+        return Err(json_error(
+            StatusCode::UNAUTHORIZED,
+            "Missing or invalid Authorization header",
+        ));
+    };
 
-    let claims = verify_token(&config, token)?;
+    let claims = verify_token(&config, token)
+        .map_err(|_| json_error(StatusCode::UNAUTHORIZED, "Invalid or expired token"))?;
 
     let current_user = CurrentUser {
         id: claims.sub,
@@ -171,7 +194,7 @@ async fn me(axum::Extension(user): axum::Extension<CurrentUser>) -> impl IntoRes
 
 async fn admin(axum::Extension(user): axum::Extension<CurrentUser>) -> impl IntoResponse {
     if user.role != "admin" {
-        return (StatusCode::FORBIDDEN, "Admin access required").into_response();
+        return json_error(StatusCode::FORBIDDEN, "Admin access required");
     }
 
     Json(serde_json::json!({
