@@ -135,17 +135,22 @@ async fn login(
     State(config): State<Arc<AuthConfig>>,
     Json(input): Json<LoginRequest>,
 ) -> Result<Json<LoginResponse>, StatusCode> {
-    let fake_user_email = "test@example.com";
-    let fake_user_id = "user-1";
-    let fake_user_role = "user";
-
     let fake_password_hash = hash_password("password123");
 
-    let email_is_valid = input.email == fake_user_email;
+    let fake_user = match input.email.as_str() {
+        "test@example.com" => Some(("user-1", "user")),
+        "admin@example.com" => Some(("admin-1", "admin")),
+        _ => None,
+    };
+
+    let Some((user_id, role)) = fake_user else {
+        return Err(StatusCode::UNAUTHORIZED);
+    };
+
     let password_is_valid = verify_password(&input.password, &fake_password_hash);
 
-    if email_is_valid && password_is_valid {
-        let token = create_token(&config, fake_user_id, fake_user_role)?;
+    if password_is_valid {
+        let token = create_token(&config, user_id, role)?;
 
         Ok(Json(LoginResponse {
             token,
