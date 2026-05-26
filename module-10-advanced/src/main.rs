@@ -67,6 +67,7 @@ async fn home() -> Html<&'static str> {
 
         <div id="ws-output"></div>
     </div>
+
     <div class="demo">
         <h2>Server-Sent Events</h2>
 
@@ -74,6 +75,15 @@ async fn home() -> Html<&'static str> {
         <button onclick="stopSse()">Parar SSE</button>
 
         <div id="sse-output"></div>
+    </div>
+
+    <div class="demo">
+        <h2>File Upload</h2>
+
+        <form action="/upload" method="post" enctype="multipart/form-data">
+            <input type="file" name="file" multiple>
+            <button type="submit">Enviar arquivo</button>
+        </form>
     </div>
 
     <script>
