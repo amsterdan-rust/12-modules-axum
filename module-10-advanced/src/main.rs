@@ -1,12 +1,22 @@
+use std::{convert::Infallible, time::Duration};
+
 use axum::{
     Router,
     extract::{
         WebSocketUpgrade,
         ws::{Message, WebSocket},
     },
-    response::{Html, IntoResponse},
+    response::{
+        Html, IntoResponse,
+        sse::{Event, KeepAlive, Sse},
+    },
     routing::get,
 };
+use futures::{
+    StreamExt as FuturesStreamExt,
+    stream::{self, Stream},
+};
+use tokio_stream::StreamExt as TokioStreamExt;
 
 async fn home() -> Html<&'static str> {
     Html(
@@ -36,7 +46,8 @@ async fn home() -> Html<&'static str> {
             font-size: 16px;
         }
 
-        #ws-output {
+        #ws-output,
+        #sse-output {
             margin-top: 12px;
             padding: 12px;
             background: white;
@@ -56,10 +67,21 @@ async fn home() -> Html<&'static str> {
 
         <div id="ws-output"></div>
     </div>
+    <div class="demo">
+        <h2>Server-Sent Events</h2>
+
+        <button onclick="startSse()">Iniciar SSE</button>
+        <button onclick="stopSse()">Parar SSE</button>
+
+        <div id="sse-output"></div>
+    </div>
 
     <script>
         const output = document.getElementById("ws-output");
         const input = document.getElementById("ws-input");
+
+        const sseOutput = document.getElementById("sse-output");
+        let eventSource = null;
 
         const socket = new WebSocket("ws://localhost:8000/ws");
 
@@ -84,6 +106,37 @@ async fn home() -> Html<&'static str> {
 
             socket.send(message);
             input.value = "";
+        }
+
+        function startSse() {
+            if (eventSource) {
+                return;
+            }
+
+            eventSource = new EventSource("/sse");
+
+            eventSource.addEventListener("message", (event) => {
+                sseOutput.innerHTML = `<p>${event.data}</p>`;
+            });
+
+            eventSource.addEventListener("open", () => {
+                sseOutput.innerHTML = "<p>SSE conectado.</p>";
+            });
+
+            eventSource.addEventListener("error", () => {
+                sseOutput.innerHTML += "<p>Erro ou conexão SSE encerrada.</p>";
+            });
+        }
+
+        function stopSse() {
+            if (!eventSource) {
+                return;
+            }
+
+            eventSource.close();
+            eventSource = null;
+
+            sseOutput.innerHTML += "<p>SSE parado.</p>";
         }
     </script>
 </body>
@@ -112,11 +165,26 @@ async fn handle_socket(mut socket: WebSocket) {
     }
 }
 
+async fn sse_handler() -> Sse<impl Stream<Item = Result<Event, Infallible>>> {
+    let stream = stream::repeat_with(|| {
+        let now = std::time::SystemTime::now();
+
+        Event::default().data(format!("Server time: {now:?}"))
+    });
+
+    let stream = FuturesStreamExt::map(stream, Ok);
+
+    let stream = TokioStreamExt::throttle(stream, Duration::from_secs(1));
+
+    Sse::new(stream).keep_alive(KeepAlive::default())
+}
+
 #[tokio::main]
 async fn main() {
     let app = Router::new()
         .route("/", get(home))
-        .route("/ws", get(ws_handler));
+        .route("/ws", get(ws_handler))
+        .route("/sse", get(sse_handler));
 
     let listener = tokio::net::TcpListener::bind("0.0.0.0:8000").await.unwrap();
 
@@ -133,16 +201,17 @@ cargo r10
 
 curl -i -w '\n\n' http://localhost:8000/
 
-Teste WebSocket no navegador:
+Teste WebSocket no Bruno:
 
-1. Acesse:
-   http://localhost:8000/
+ws://localhost:8000/ws
 
-2. Abra o console do navegador e rode:
+Envie:
+Oi Axum
 
-const ws = new WebSocket("ws://localhost:8000/ws");
+Resposta esperada:
+Echo: Oi Axum
 
-ws.onmessage = (event) => console.log(event.data);
+Teste SSE:
 
-ws.onopen = () => ws.send("Oi Axum");
+curl -i -N http://localhost:8000/sse
 */
