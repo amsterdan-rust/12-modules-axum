@@ -262,4 +262,39 @@ mod tests {
 
         assert!(users.get(&1).is_none());
     }
+
+    #[tokio::test]
+    async fn test_get_user_not_found() {
+        let app = create_app(test_store());
+
+        let response = app
+            .oneshot(
+                Request::builder()
+                    .uri("/users/999")
+                    .body(Body::empty())
+                    .unwrap(),
+            )
+            .await
+            .unwrap();
+
+        assert_eq!(response.status(), axum::http::StatusCode::NOT_FOUND);
+    }
+
+    #[tokio::test]
+    async fn test_delete_user_not_found() {
+        let app = create_app(test_store());
+
+        let response = app
+            .oneshot(
+                Request::builder()
+                    .method("DELETE")
+                    .uri("/users/999")
+                    .body(Body::empty())
+                    .unwrap(),
+            )
+            .await
+            .unwrap();
+
+        assert_eq!(response.status(), axum::http::StatusCode::NOT_FOUND);
+    }
 }
