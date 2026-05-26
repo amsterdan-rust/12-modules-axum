@@ -1,16 +1,45 @@
-use axum::{Router, response::IntoResponse, routing::get};
+use std::{
+    collections::HashMap,
+    sync::{Arc, RwLock},
+};
+
+use axum::{Json, Router, extract::State, response::IntoResponse, routing::get};
+use serde::{Deserialize, Serialize};
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+struct User {
+    id: u64,
+    name: String,
+}
+
+#[derive(Deserialize)]
+struct CreateUser {
+    name: String,
+}
+
+type UserStore = Arc<RwLock<HashMap<u64, User>>>;
 
 async fn health() -> impl IntoResponse {
     "OK"
 }
 
-fn create_app() -> Router {
-    Router::new().route("/health", get(health))
+async fn list_users(State(store): State<UserStore>) -> Json<Vec<User>> {
+    let users = store.read().unwrap();
+
+    Json(users.values().cloned().collect())
+}
+
+fn create_app(store: UserStore) -> Router {
+    Router::new()
+        .route("/health", get(health))
+        .route("/users", get(list_users))
+        .with_state(store)
 }
 
 #[tokio::main]
 async fn main() {
-    let app = create_app();
+    let store = Arc::new(RwLock::new(HashMap::new()));
+    let app = create_app(store);
 
     let listener = tokio::net::TcpListener::bind("0.0.0.0:8000").await.unwrap();
 
@@ -36,9 +65,13 @@ mod tests {
     use http_body_util::BodyExt;
     use tower::ServiceExt;
 
+    fn test_store() -> UserStore {
+        Arc::new(RwLock::new(HashMap::new()))
+    }
+
     #[tokio::test]
     async fn test_health_check() {
-        let app = create_app();
+        let app = create_app(test_store());
 
         let response = app
             .oneshot(
