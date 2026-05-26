@@ -3,7 +3,7 @@ use std::{
     sync::{Arc, RwLock},
 };
 
-use axum::{Json, Router, extract::State, response::IntoResponse, routing::get};
+use axum::{Json, Router, extract::State, http::StatusCode, response::IntoResponse, routing::get};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
@@ -29,10 +29,28 @@ async fn list_users(State(store): State<UserStore>) -> Json<Vec<User>> {
     Json(users.values().cloned().collect())
 }
 
+async fn create_user(
+    State(store): State<UserStore>,
+    Json(input): Json<CreateUser>,
+) -> (StatusCode, Json<User>) {
+    let mut users = store.write().unwrap();
+
+    let id = users.len() as u64 + 1;
+
+    let user = User {
+        id,
+        name: input.name,
+    };
+
+    users.insert(id, user.clone());
+
+    (StatusCode::CREATED, Json(user))
+}
+
 fn create_app(store: UserStore) -> Router {
     Router::new()
         .route("/health", get(health))
-        .route("/users", get(list_users))
+        .route("/users", get(list_users).post(create_user))
         .with_state(store)
 }
 
