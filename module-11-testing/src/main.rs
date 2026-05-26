@@ -66,6 +66,22 @@ async fn create_user(
     (StatusCode::CREATED, Json(user))
 }
 
+async fn update_user(
+    State(store): State<UserStore>,
+    Path(id): Path<u64>,
+    Json(input): Json<CreateUser>,
+) -> Result<Json<User>, StatusCode> {
+    let mut users = store.write().unwrap();
+
+    let Some(user) = users.get_mut(&id) else {
+        return Err(StatusCode::NOT_FOUND);
+    };
+
+    user.name = input.name;
+
+    Ok(Json(user.clone()))
+}
+
 async fn delete_user(State(store): State<UserStore>, Path(id): Path<u64>) -> StatusCode {
     let mut users = store.write().unwrap();
 
@@ -80,7 +96,10 @@ fn create_app(store: UserStore) -> Router {
     Router::new()
         .route("/health", get(health))
         .route("/users", get(list_users).post(create_user))
-        .route("/users/{id}", get(get_user).delete(delete_user))
+        .route(
+            "/users/{id}",
+            get(get_user).put(update_user).delete(delete_user),
+        )
         .with_state(store)
 }
 
@@ -290,6 +309,69 @@ mod tests {
                     .method("DELETE")
                     .uri("/users/999")
                     .body(Body::empty())
+                    .unwrap(),
+            )
+            .await
+            .unwrap();
+
+        assert_eq!(response.status(), axum::http::StatusCode::NOT_FOUND);
+    }
+
+    #[tokio::test]
+    async fn test_update_user_by_id() {
+        let store = test_store();
+
+        store.write().unwrap().insert(
+            1,
+            User {
+                id: 1,
+                name: "Alice".to_string(),
+            },
+        );
+
+        let app = create_app(store.clone());
+
+        let response = app
+            .oneshot(
+                Request::builder()
+                    .method("PUT")
+                    .uri("/users/1")
+                    .header("content-type", "application/json")
+                    .body(Body::from(r#"{"name":"Alice Updated"}"#))
+                    .unwrap(),
+            )
+            .await
+            .unwrap();
+
+        assert_eq!(response.status(), axum::http::StatusCode::OK);
+
+        let body = response.into_body().collect().await.unwrap().to_bytes();
+
+        let user: User = serde_json::from_slice(&body).unwrap();
+
+        assert_eq!(
+            user,
+            User {
+                id: 1,
+                name: "Alice Updated".to_string(),
+            }
+        );
+
+        let users = store.read().unwrap();
+        assert_eq!(users.get(&1).unwrap().name, "Alice Updated");
+    }
+
+    #[tokio::test]
+    async fn test_update_user_not_found() {
+        let app = create_app(test_store());
+
+        let response = app
+            .oneshot(
+                Request::builder()
+                    .method("PUT")
+                    .uri("/users/999")
+                    .header("content-type", "application/json")
+                    .body(Body::from(r#"{"name":"Nobody"}"#))
                     .unwrap(),
             )
             .await
