@@ -89,4 +89,27 @@ mod tests {
 
         assert_eq!(&body[..], b"OK");
     }
+
+    #[tokio::test]
+    async fn test_list_users_empty() {
+        let app = create_app(test_store());
+
+        let response = app
+            .oneshot(
+                Request::builder()
+                    .uri("/users")
+                    .body(Body::empty())
+                    .unwrap(),
+            )
+            .await
+            .unwrap();
+
+        assert_eq!(response.status(), axum::http::StatusCode::OK);
+
+        let body = response.into_body().collect().await.unwrap().to_bytes();
+
+        let users: Vec<User> = serde_json::from_slice(&body).unwrap();
+
+        assert_eq!(users, Vec::<User>::new());
+    }
 }
