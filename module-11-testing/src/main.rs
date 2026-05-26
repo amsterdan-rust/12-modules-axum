@@ -3,7 +3,13 @@ use std::{
     sync::{Arc, RwLock},
 };
 
-use axum::{Json, Router, extract::State, http::StatusCode, response::IntoResponse, routing::get};
+use axum::{
+    Json, Router,
+    extract::{Path, State},
+    http::StatusCode,
+    response::IntoResponse,
+    routing::get,
+};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
@@ -29,6 +35,19 @@ async fn list_users(State(store): State<UserStore>) -> Json<Vec<User>> {
     Json(users.values().cloned().collect())
 }
 
+async fn get_user(
+    State(store): State<UserStore>,
+    Path(id): Path<u64>,
+) -> Result<Json<User>, StatusCode> {
+    let users = store.read().unwrap();
+
+    users
+        .get(&id)
+        .cloned()
+        .map(Json)
+        .ok_or(StatusCode::NOT_FOUND)
+}
+
 async fn create_user(
     State(store): State<UserStore>,
     Json(input): Json<CreateUser>,
@@ -47,10 +66,21 @@ async fn create_user(
     (StatusCode::CREATED, Json(user))
 }
 
+async fn delete_user(State(store): State<UserStore>, Path(id): Path<u64>) -> StatusCode {
+    let mut users = store.write().unwrap();
+
+    if users.remove(&id).is_some() {
+        StatusCode::NO_CONTENT
+    } else {
+        StatusCode::NOT_FOUND
+    }
+}
+
 fn create_app(store: UserStore) -> Router {
     Router::new()
         .route("/health", get(health))
         .route("/users", get(list_users).post(create_user))
+        .route("/users/{id}", get(get_user).delete(delete_user))
         .with_state(store)
 }
 
@@ -160,5 +190,76 @@ mod tests {
                 name: "Alice".to_string(),
             }
         );
+    }
+
+    #[tokio::test]
+    async fn test_get_user_by_id() {
+        let store = test_store();
+
+        store.write().unwrap().insert(
+            1,
+            User {
+                id: 1,
+                name: "Alice".to_string(),
+            },
+        );
+
+        let app = create_app(store);
+
+        let response = app
+            .oneshot(
+                Request::builder()
+                    .uri("/users/1")
+                    .body(Body::empty())
+                    .unwrap(),
+            )
+            .await
+            .unwrap();
+
+        assert_eq!(response.status(), axum::http::StatusCode::OK);
+
+        let body = response.into_body().collect().await.unwrap().to_bytes();
+
+        let user: User = serde_json::from_slice(&body).unwrap();
+
+        assert_eq!(
+            user,
+            User {
+                id: 1,
+                name: "Alice".to_string(),
+            }
+        );
+    }
+
+    #[tokio::test]
+    async fn test_delete_user_by_id() {
+        let store = test_store();
+
+        store.write().unwrap().insert(
+            1,
+            User {
+                id: 1,
+                name: "Alice".to_string(),
+            },
+        );
+
+        let app = create_app(store.clone());
+
+        let response = app
+            .oneshot(
+                Request::builder()
+                    .method("DELETE")
+                    .uri("/users/1")
+                    .body(Body::empty())
+                    .unwrap(),
+            )
+            .await
+            .unwrap();
+
+        assert_eq!(response.status(), axum::http::StatusCode::NO_CONTENT);
+
+        let users = store.read().unwrap();
+
+        assert!(users.get(&1).is_none());
     }
 }
