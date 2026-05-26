@@ -3,14 +3,14 @@ use std::{convert::Infallible, time::Duration};
 use axum::{
     Router,
     extract::{
-        WebSocketUpgrade,
+        Multipart, WebSocketUpgrade,
         ws::{Message, WebSocket},
     },
     response::{
         Html, IntoResponse,
         sse::{Event, KeepAlive, Sse},
     },
-    routing::get,
+    routing::{get, post},
 };
 use futures::{
     StreamExt as FuturesStreamExt,
@@ -179,12 +179,32 @@ async fn sse_handler() -> Sse<impl Stream<Item = Result<Event, Infallible>>> {
     Sse::new(stream).keep_alive(KeepAlive::default())
 }
 
+async fn upload(mut multipart: Multipart) -> impl IntoResponse {
+    let mut files = Vec::new();
+
+    while let Some(field) = multipart.next_field().await.unwrap() {
+        let name = field.name().unwrap_or("unknown").to_string();
+        let file_name = field.file_name().unwrap_or("unnamed").to_string();
+
+        let data = field.bytes().await.unwrap();
+
+        files.push(format!("{name} ({file_name}): {} bytes", data.len()));
+    }
+
+    if files.is_empty() {
+        "No files uploaded".to_string()
+    } else {
+        format!("Uploaded: {}", files.join(", "))
+    }
+}
+
 #[tokio::main]
 async fn main() {
     let app = Router::new()
         .route("/", get(home))
         .route("/ws", get(ws_handler))
-        .route("/sse", get(sse_handler));
+        .route("/sse", get(sse_handler))
+        .route("/upload", post(upload));
 
     let listener = tokio::net::TcpListener::bind("0.0.0.0:8000").await.unwrap();
 
@@ -214,4 +234,11 @@ Echo: Oi Axum
 Teste SSE:
 
 curl -i -N http://localhost:8000/sse
+
+Teste upload:
+
+echo "Hello upload" > test-upload.txt
+
+curl -i -w '\n\n' -X POST http://localhost:8000/upload \
+  -F 'file=@test-upload.txt'
 */
