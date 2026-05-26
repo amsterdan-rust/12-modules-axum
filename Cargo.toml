@@ -1,6 +1,6 @@
 [workspace]
 resolver = "3"
-members = ["module-01-intro", "module-02-routing", "module-03-extractors", "module-04-responses", "module-05-state", "module-06-middleware", "module-07-errors", "module-08-database", "module-09-auth", "module-10-advanced"]
+members = ["module-01-intro", "module-02-routing", "module-03-extractors", "module-04-responses", "module-05-state", "module-06-middleware", "module-07-errors", "module-08-database", "module-09-auth", "module-10-advanced", "module-11-testing"]
 
 [workspace.package]
 version = "0.1.0"
@@ -16,7 +16,7 @@ uuid = { version = "1", features = ["v4", "serde"] }
 # add mod 06
 tracing = "0.1"
 tracing-subscriber = "0.3"
-tower = "0.5"
+tower = { version = "0.5", features = ["util"] }
 tower-http = { version = "0.6", features = ["trace", "cors", "compression-full", "fs"] }
 # add mod 07
 thiserror = "2"
@@ -31,3 +31,5 @@ rand = "0.8"
 # add mod 10
 futures = "0.3"
 tokio-stream = "0.1"
+# add mod 11
+http-body-util = "0.1"

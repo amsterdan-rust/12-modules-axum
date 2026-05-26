@@ -28,3 +28,7 @@ r09 = "run -p module-09-auth"
 
 c10 = "check -p module-10-advanced"
 r10 = "run -p module-10-advanced"
+
+c11 = "check -p module-11-testing"
+r11 = "run -p module-11-testing"
+t11 = "test -p module-11-testing"
