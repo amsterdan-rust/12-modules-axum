@@ -11,15 +11,84 @@ use axum::{
 async fn home() -> Html<&'static str> {
     Html(
         r#"
-        <h1>Module 10: Advanced Features</h1>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Module 10: Advanced Features</title>
+    <style>
+        body {
+            font-family: system-ui, sans-serif;
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+        }
 
-        <ul>
-            <li>WebSocket</li>
-            <li>Server-Sent Events</li>
-            <li>File Upload</li>
-            <li>Static Files</li>
-        </ul>
-        "#,
+        .demo {
+            background: #f5f5f5;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        input, button {
+            padding: 8px 12px;
+            font-size: 16px;
+        }
+
+        #ws-output {
+            margin-top: 12px;
+            padding: 12px;
+            background: white;
+            border: 1px solid #ddd;
+            min-height: 80px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Module 10: Advanced Features</h1>
+
+    <div class="demo">
+        <h2>WebSocket Echo</h2>
+
+        <input id="ws-input" type="text" placeholder="Digite uma mensagem">
+        <button onclick="sendMessage()">Enviar</button>
+
+        <div id="ws-output"></div>
+    </div>
+
+    <script>
+        const output = document.getElementById("ws-output");
+        const input = document.getElementById("ws-input");
+
+        const socket = new WebSocket("ws://localhost:8000/ws");
+
+        socket.addEventListener("open", () => {
+            output.innerHTML += "<p>Conectado ao WebSocket.</p>";
+        });
+
+        socket.addEventListener("message", (event) => {
+            output.innerHTML += `<p>${event.data}</p>`;
+        });
+
+        socket.addEventListener("close", () => {
+            output.innerHTML += "<p>Conexão fechada.</p>";
+        });
+
+        function sendMessage() {
+            const message = input.value;
+
+            if (!message) {
+                return;
+            }
+
+            socket.send(message);
+            input.value = "";
+        }
+    </script>
+</body>
+</html>
+"#,
     )
 }
 
