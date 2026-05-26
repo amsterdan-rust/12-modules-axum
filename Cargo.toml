@@ -1,13 +1,13 @@
 [workspace]
 resolver = "3"
-members = ["module-01-intro", "module-02-routing", "module-03-extractors", "module-04-responses", "module-05-state", "module-06-middleware", "module-07-errors", "module-08-database", "module-09-auth"]
+members = ["module-01-intro", "module-02-routing", "module-03-extractors", "module-04-responses", "module-05-state", "module-06-middleware", "module-07-errors", "module-08-database", "module-09-auth", "module-10-advanced"]
 
 [workspace.package]
 version = "0.1.0"
 edition = "2024"
 
 [workspace.dependencies]
-axum = "0.8.9"
+axum = { version = "0.8.9", features = ["ws", "multipart"] }
 tokio = { version = "1", features = ["macros", "rt-multi-thread", "net", "sync", "time"] }
 serde = { version = "1", features = ["derive"] }
 # add mod 05
@@ -17,7 +17,7 @@ uuid = { version = "1", features = ["v4", "serde"] }
 tracing = "0.1"
 tracing-subscriber = "0.3"
 tower = "0.5"
-tower-http = { version = "0.6", features = ["trace", "cors", "compression-full"] }
+tower-http = { version = "0.6", features = ["trace", "cors", "compression-full", "fs"] }
 # add mod 07
 thiserror = "2"
 # add mod 08
@@ -28,3 +28,6 @@ dotenvy = "0.15"
 jsonwebtoken = "9"
 argon2 = "0.5"
 rand = "0.8"
+# add mod 10
+futures = "0.3"
+tokio-stream = "0.1"
