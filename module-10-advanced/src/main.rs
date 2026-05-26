@@ -17,6 +17,7 @@ use futures::{
     stream::{self, Stream},
 };
 use tokio_stream::StreamExt as TokioStreamExt;
+use tower_http::services::ServeDir;
 
 async fn home() -> Html<&'static str> {
     Html(
@@ -214,7 +215,8 @@ async fn main() {
         .route("/", get(home))
         .route("/ws", get(ws_handler))
         .route("/sse", get(sse_handler))
-        .route("/upload", post(upload));
+        .route("/upload", post(upload))
+        .nest_service("/static", ServeDir::new("module-10-advanced/static"));
 
     let listener = tokio::net::TcpListener::bind("0.0.0.0:8000").await.unwrap();
 
@@ -251,4 +253,12 @@ echo "Hello upload" > test-upload.txt
 
 curl -i -w '\n\n' -X POST http://localhost:8000/upload \
   -F 'file=@test-upload.txt'
+
+Teste static files:
+
+mkdir -p static
+
+echo "Hello from static file!" > static/hello.txt
+
+curl -i -w '\n\n' http://localhost:8000/static/hello.txt
 */
