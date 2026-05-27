@@ -4,6 +4,7 @@ use std::sync::{
     atomic::{AtomicBool, AtomicU64, Ordering},
 };
 use tokio::net::TcpListener;
+use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
 #[derive(Clone)]
 struct AppState {
@@ -54,20 +55,36 @@ fn create_app(state: AppState) -> Router {
         .with_state(state)
 }
 
+fn init_tracing() {
+    tracing_subscriber::registry()
+        .with(
+            tracing_subscriber::fmt::layer()
+                .json()
+                .with_target(true)
+                .with_current_span(true),
+        )
+        .with(tracing_subscriber::EnvFilter::new(
+            std::env::var("RUST_LOG").unwrap_or_else(|_| "info".to_string()),
+        ))
+        .init();
+}
+
 #[tokio::main]
 async fn main() {
+    init_tracing();
+
     let state = AppState::default();
 
     let app = create_app(state);
 
     let listener = TcpListener::bind("0.0.0.0:8000").await.unwrap();
 
-    println!("🚀 Module 12: Production Ready");
-    println!("Server: http://localhost:8000");
-    println!("GET /");
-    println!("GET /health");
-    println!("GET /ready");
-    println!("GET /metrics");
+    tracing::info!("🚀 Module 12: Production Ready");
+    tracing::info!("Server: http://localhost:8000");
+    tracing::info!("GET /");
+    tracing::info!("GET /health");
+    tracing::info!("GET /ready");
+    tracing::info!("GET /metrics");
 
     axum::serve(listener, app).await.unwrap();
 }
