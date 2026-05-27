@@ -11,7 +11,7 @@ use std::{
         Arc,
         atomic::{AtomicBool, AtomicU64, Ordering},
     },
-    time::Instant,
+    time::{Duration, Instant},
 };
 use tokio::net::TcpListener;
 use tower_http::compression::CompressionLayer;
@@ -144,7 +144,7 @@ async fn main() {
 
     let state = AppState::default();
 
-    let app = create_app(state);
+    let app = create_app(state.clone());
 
     let listener = TcpListener::bind("0.0.0.0:8000").await.unwrap();
 
@@ -155,19 +155,47 @@ async fn main() {
     tracing::info!("GET /ready");
     tracing::info!("GET /metrics");
 
-    axum::serve(listener, app).await.unwrap();
+    axum::serve(listener, app)
+        .with_graceful_shutdown(shutdown_signal(state))
+        .await
+        .unwrap();
+
+    tracing::info!("server shut down gracefully");
 }
 
-/*
-Teste com:
+async fn shutdown_signal(state: AppState) {
+    let ctrl_c = async {
+        tokio::signal::ctrl_c()
+            .await
+            .expect("failed to install Ctrl+C handler");
+    };
 
-cargo r12
+    #[cfg(unix)]
+    let terminate = async {
+        tokio::signal::unix::signal(tokio::signal::unix::SignalKind::terminate())
+            .expect("failed to install SIGTERM handler")
+            .recv()
+            .await;
+    };
 
-curl -i -w '\n\n' http://localhost:8000/
+    #[cfg(not(unix))]
+    let terminate = std::future::pending::<()>();
 
-curl -i -w '\n\n' http://localhost:8000/health
+    tokio::select! {
+        _ = ctrl_c => {
+            tracing::info!("received Ctrl+C signal");
+        }
+        _ = terminate => {
+            tracing::info!("received SIGTERM signal");
+        }
+    }
 
-curl -i -w '\n\n' http://localhost:8000/ready
+    state.ready.store(false, Ordering::SeqCst);
 
-curl -i -w '\n\n' http://localhost:8000/metrics
-*/
+    tracing::info!("application marked as not ready");
+    tracing::info!("waiting before shutdown");
+
+    tokio::time::sleep(Duration::from_secs(5)).await;
+
+    tracing::info!("shutdown delay finished");
+}
