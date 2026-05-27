@@ -32,3 +32,6 @@ r10 = "run -p module-10-advanced"
 c11 = "check -p module-11-testing"
 r11 = "run -p module-11-testing"
 t11 = "test -p module-11-testing"
+
+c12 = "check -p module-12-production"
+r12 = "run -p module-12-production"
