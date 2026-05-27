@@ -35,3 +35,6 @@ t11 = "test -p module-11-testing"
 
 c12 = "check -p module-12-production"
 r12 = "run -p module-12-production"
+
+c13 = "check -p module-13-openapi"
+r13 = "run -p module-13-openapi"
