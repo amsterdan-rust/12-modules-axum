@@ -1,7 +1,17 @@
-use axum::{Json, Router, extract::State, http::StatusCode, routing::get};
-use std::sync::{
-    Arc,
-    atomic::{AtomicBool, AtomicU64, Ordering},
+use axum::{
+    Json, Router,
+    extract::State,
+    http::{Method, StatusCode, Uri},
+    middleware::{self, Next},
+    response::Response,
+    routing::get,
+};
+use std::{
+    sync::{
+        Arc,
+        atomic::{AtomicBool, AtomicU64, Ordering},
+    },
+    time::Instant,
 };
 use tokio::net::TcpListener;
 use tower_http::trace::{DefaultMakeSpan, DefaultOnRequest, DefaultOnResponse, TraceLayer};
@@ -48,6 +58,43 @@ async fn metrics(State(state): State<AppState>) -> Json<serde_json::Value> {
     }))
 }
 
+async fn request_logger(request: axum::extract::Request, next: Next) -> Response {
+    let method = request.method().clone();
+    let uri = request.uri().clone();
+    let started_at = Instant::now();
+
+    tracing::info!("→ {} {}", method, uri);
+
+    let response = next.run(request).await;
+
+    let status = response.status();
+    let elapsed = started_at.elapsed();
+
+    let status_icon = if status.is_success() {
+        "✅"
+    } else if status.is_client_error() {
+        "⚠️"
+    } else if status.is_server_error() {
+        "💥"
+    } else {
+        "ℹ️"
+    };
+
+    tracing::info!(
+        "{} {} {} {}ms",
+        status_icon,
+        status.as_u16(),
+        format_request(&method, &uri),
+        elapsed.as_millis()
+    );
+
+    response
+}
+
+fn format_request(method: &Method, uri: &Uri) -> String {
+    format!("{method} {uri}")
+}
+
 fn create_app(state: AppState) -> Router {
     Router::new()
         .route("/", get(index))
@@ -55,21 +102,19 @@ fn create_app(state: AppState) -> Router {
         .route("/ready", get(ready))
         .route("/metrics", get(metrics))
         .with_state(state)
-        .layer(
-            TraceLayer::new_for_http()
-                .make_span_with(DefaultMakeSpan::new().level(Level::INFO))
-                .on_request(DefaultOnRequest::new().level(Level::INFO))
-                .on_response(DefaultOnResponse::new().level(Level::INFO)),
-        )
+        .layer(middleware::from_fn(request_logger))
 }
 
 fn init_tracing() {
     tracing_subscriber::registry()
         .with(
             tracing_subscriber::fmt::layer()
-                .json()
-                .with_target(true)
-                .with_current_span(true),
+                .compact()
+                .with_target(false)
+                .with_thread_ids(false)
+                .with_thread_names(false)
+                .with_file(false)
+                .with_line_number(false),
         )
         .with(tracing_subscriber::EnvFilter::new(
             std::env::var("RUST_LOG").unwrap_or_else(|_| "info".to_string()),
