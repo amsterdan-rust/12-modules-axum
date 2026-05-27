@@ -14,8 +14,7 @@ use std::{
     time::Instant,
 };
 use tokio::net::TcpListener;
-use tower_http::trace::{DefaultMakeSpan, DefaultOnRequest, DefaultOnResponse, TraceLayer};
-use tracing::Level;
+use tower_http::compression::CompressionLayer;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
 #[derive(Clone)]
@@ -55,6 +54,21 @@ async fn metrics(State(state): State<AppState>) -> Json<serde_json::Value> {
     Json(serde_json::json!({
         "requests": state.request_count.load(Ordering::SeqCst),
         "ready": state.ready.load(Ordering::SeqCst),
+    }))
+}
+
+async fn large_response() -> Json<serde_json::Value> {
+    let items: Vec<_> = (1..=1000)
+        .map(|id| {
+            serde_json::json!({
+                "id": id,
+                "message": "This is a larger response to test compression"
+            })
+        })
+        .collect();
+
+    Json(serde_json::json!({
+        "items": items
     }))
 }
 
@@ -101,8 +115,10 @@ fn create_app(state: AppState) -> Router {
         .route("/health", get(health))
         .route("/ready", get(ready))
         .route("/metrics", get(metrics))
+        .route("/large", get(large_response))
         .with_state(state)
         .layer(middleware::from_fn(request_logger))
+        .layer(CompressionLayer::new())
 }
 
 fn init_tracing() {
