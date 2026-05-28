@@ -9,15 +9,16 @@ use std::{
     collections::HashMap,
     sync::{Arc, RwLock},
 };
+use utoipa::ToSchema;
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, ToSchema)]
 struct User {
     id: u64,
     name: String,
     email: String,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, ToSchema)]
 struct CreateUser {
     name: String,
     email: String,
