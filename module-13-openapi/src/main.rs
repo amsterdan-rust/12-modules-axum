@@ -9,7 +9,7 @@ use std::{
     collections::HashMap,
     sync::{Arc, RwLock},
 };
-use utoipa::ToSchema;
+use utoipa::{OpenApi, ToSchema};
 
 #[derive(Debug, Clone, Serialize, ToSchema)]
 struct User {
@@ -23,6 +23,24 @@ struct CreateUser {
     name: String,
     email: String,
 }
+
+#[derive(OpenApi)]
+#[openapi(
+    paths(
+        health,
+        list_users,
+        create_user,
+        get_user
+    ),
+    components(
+        schemas(User, CreateUser)
+    ),
+    tags(
+        (name = "users", description = "User management endpoints"),
+        (name = "health", description = "Application health endpoints")
+    )
+)]
+struct ApiDoc;
 
 type UserStore = Arc<RwLock<HashMap<u64, User>>>;
 
