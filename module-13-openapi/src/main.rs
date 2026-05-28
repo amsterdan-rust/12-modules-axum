@@ -44,6 +44,10 @@ struct ApiDoc;
 
 type UserStore = Arc<RwLock<HashMap<u64, User>>>;
 
+async fn openapi_json() -> Json<utoipa::openapi::OpenApi> {
+    Json(ApiDoc::openapi())
+}
+
 #[utoipa::path(
     get,
     path="/health",
@@ -124,6 +128,7 @@ fn create_app(store: UserStore) -> Router {
         .route("/health", get(health))
         .route("/users", get(list_users).post(create_user))
         .route("/users/{id}", get(get_user))
+        .route("/docs/openapi.json", get(openapi_json))
         .with_state(store)
 }
 
@@ -141,6 +146,7 @@ async fn main() {
     println!("GET  /users");
     println!("POST /users");
     println!("GET  /users/{{id}}");
+    println!("GET  /docs/openapi.json");
 
     axum::serve(listener, app).await.unwrap();
 }
