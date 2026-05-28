@@ -26,16 +26,38 @@ struct CreateUser {
 
 type UserStore = Arc<RwLock<HashMap<u64, User>>>;
 
+#[utoipa::path(
+    get,
+    path="/health",
+    responses(
+        (status = 200, description = "Application is healthy", body = String)
+    )
+)]
 async fn health() -> &'static str {
     "OK"
 }
 
+#[utoipa::path(
+    get,
+    path = "/users",
+    responses(
+        (status = 200, description = "List all users", body = Vec<User>)
+    )
+)]
 async fn list_users(State(store): State<UserStore>) -> Json<Vec<User>> {
     let users = store.read().unwrap();
 
     Json(users.values().cloned().collect())
 }
 
+#[utoipa::path(
+    post,
+    path = "/users",
+    request_body = CreateUser,
+    responses(
+        (status = 201, description = "User created", body = User)
+    )
+)]
 async fn create_user(
     State(store): State<UserStore>,
     Json(input): Json<CreateUser>,
@@ -55,6 +77,17 @@ async fn create_user(
     (StatusCode::CREATED, Json(user))
 }
 
+#[utoipa::path(
+    get,
+    path = "/users/{id}",
+    params(
+        ("id" = u64, Path, description = "User id")
+    ),
+    responses(
+        (status = 200, description = "User found", body = User),
+        (status = 404, description = "User not found")
+    )
+)]
 async fn get_user(
     State(store): State<UserStore>,
     Path(id): Path<u64>,
