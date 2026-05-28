@@ -35,5 +35,5 @@ tokio-stream = "0.1"
 http-body-util = "0.1"
 # add mod 13
 utoipa = "5.4.0"
-utoipa-swagger-ui = { version = "9.0.2", features = ["axum"] }
 utoipa-axum = "0.2.0"
+utoipa-scalar = { version = "0.3.0", features = ["axum"] }

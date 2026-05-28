@@ -10,7 +10,7 @@ use std::{
     sync::{Arc, RwLock},
 };
 use utoipa::{OpenApi, ToSchema};
-use utoipa_swagger_ui::SwaggerUi;
+use utoipa_scalar::{Scalar, Servable};
 
 #[derive(Debug, Clone, Serialize, ToSchema)]
 struct User {
@@ -168,7 +168,7 @@ fn create_app(store: UserStore) -> Router {
         .route("/health", get(health))
         .route("/users", get(list_users).post(create_user))
         .route("/users/{id}", get(get_user))
-        .merge(SwaggerUi::new("/swagger-ui").url("/api-docs/openapi.json", ApiDoc::openapi()))
+        .merge(Scalar::with_url("/scalar", ApiDoc::openapi()))
         .with_state(store)
 }
 
@@ -187,7 +187,7 @@ async fn main() {
     println!("POST /users");
     println!("GET  /users/{{id}}");
     println!("GET  /api-docs/openapi.json");
-    println!("GET  /swagger-ui");
+    println!("GET  /scalar");
 
     axum::serve(listener, app).await.unwrap();
 }
