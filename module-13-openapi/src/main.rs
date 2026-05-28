@@ -35,6 +35,18 @@ struct CreateUser {
 
 #[derive(OpenApi)]
 #[openapi(
+    info(
+        title = "Module 13 OpenAPI",
+        description = "Example Axum API documented with OpenAPI and Swagger UI",
+        version = "0.1.0",
+        contact(
+            name = "Amsterdan Vasconcelos",
+            email = "amsterdan.rust@gmail.com"
+        ),
+        license(
+            name = "MIT"
+        )
+        ),
     paths(
         health,
         list_users,
