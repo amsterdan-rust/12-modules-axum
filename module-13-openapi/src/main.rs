@@ -10,17 +10,26 @@ use std::{
     sync::{Arc, RwLock},
 };
 use utoipa::{OpenApi, ToSchema};
+use utoipa_swagger_ui::SwaggerUi;
 
 #[derive(Debug, Clone, Serialize, ToSchema)]
 struct User {
+    #[schema(example = 1)]
     id: u64,
+
+    #[schema(example = "Alice")]
     name: String,
+
+    #[schema(example = "alice@example.com")]
     email: String,
 }
 
 #[derive(Debug, Deserialize, ToSchema)]
 struct CreateUser {
+    #[schema(example = "Alice")]
     name: String,
+
+    #[schema(example = "alice@example.com")]
     email: String,
 }
 
@@ -33,7 +42,7 @@ struct CreateUser {
         get_user
     ),
     components(
-        schemas(User, CreateUser)
+        schemas(User, CreateUser, ErrorResponse)
     ),
     tags(
         (name = "users", description = "User management endpoints"),
@@ -42,15 +51,31 @@ struct CreateUser {
 )]
 struct ApiDoc;
 
+#[derive(Debug, Serialize, ToSchema)]
+struct ErrorResponse {
+    #[schema(example = "User not found")]
+    message: String,
+
+    #[schema(example = 404)]
+    status: u16,
+}
+
 type UserStore = Arc<RwLock<HashMap<u64, User>>>;
 
-async fn openapi_json() -> Json<utoipa::openapi::OpenApi> {
-    Json(ApiDoc::openapi())
+fn error_response(status: StatusCode, message: &str) -> (StatusCode, Json<ErrorResponse>) {
+    (
+        status,
+        Json(ErrorResponse {
+            message: message.to_string(),
+            status: status.as_u16(),
+        }),
+    )
 }
 
 #[utoipa::path(
     get,
     path="/health",
+    tag = "health",
     responses(
         (status = 200, description = "Application is healthy", body = String)
     )
@@ -62,6 +87,7 @@ async fn health() -> &'static str {
 #[utoipa::path(
     get,
     path = "/users",
+    tag = "users",
     responses(
         (status = 200, description = "List all users", body = Vec<User>)
     )
@@ -75,6 +101,7 @@ async fn list_users(State(store): State<UserStore>) -> Json<Vec<User>> {
 #[utoipa::path(
     post,
     path = "/users",
+    tag = "users",
     request_body = CreateUser,
     responses(
         (status = 201, description = "User created", body = User)
@@ -102,25 +129,26 @@ async fn create_user(
 #[utoipa::path(
     get,
     path = "/users/{id}",
+    tag = "users",
     params(
         ("id" = u64, Path, description = "User id")
     ),
     responses(
         (status = 200, description = "User found", body = User),
-        (status = 404, description = "User not found")
+        (status = 404, description = "User not found", body = ErrorResponse)
     )
 )]
 async fn get_user(
     State(store): State<UserStore>,
     Path(id): Path<u64>,
-) -> Result<Json<User>, StatusCode> {
+) -> Result<Json<User>, (StatusCode, Json<ErrorResponse>)> {
     let users = store.read().unwrap();
 
     users
         .get(&id)
         .cloned()
         .map(Json)
-        .ok_or(StatusCode::NOT_FOUND)
+        .ok_or_else(|| error_response(StatusCode::NOT_FOUND, "User not found"))
 }
 
 fn create_app(store: UserStore) -> Router {
@@ -128,7 +156,7 @@ fn create_app(store: UserStore) -> Router {
         .route("/health", get(health))
         .route("/users", get(list_users).post(create_user))
         .route("/users/{id}", get(get_user))
-        .route("/docs/openapi.json", get(openapi_json))
+        .merge(SwaggerUi::new("/swagger-ui").url("/api-docs/openapi.json", ApiDoc::openapi()))
         .with_state(store)
 }
 
@@ -146,7 +174,8 @@ async fn main() {
     println!("GET  /users");
     println!("POST /users");
     println!("GET  /users/{{id}}");
-    println!("GET  /docs/openapi.json");
+    println!("GET  /api-docs/openapi.json");
+    println!("GET  /swagger-ui");
 
     axum::serve(listener, app).await.unwrap();
 }
