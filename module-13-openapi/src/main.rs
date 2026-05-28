@@ -1,3 +1,110 @@
-fn main() {
-    println!("Hello, world!");
+use axum::{
+    Json, Router,
+    extract::{Path, State},
+    http::StatusCode,
+    routing::get,
+};
+use serde::{Deserialize, Serialize};
+use std::{
+    collections::HashMap,
+    sync::{Arc, RwLock},
+};
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+struct User {
+    id: u64,
+    name: String,
+    email: String,
 }
+
+#[derive(Debug, Deserialize)]
+struct CreateUser {
+    name: String,
+    email: String,
+}
+
+type UserStore = Arc<RwLock<HashMap<u64, User>>>;
+
+async fn health() -> &'static str {
+    "OK"
+}
+
+async fn list_users(State(store): State<UserStore>) -> Json<Vec<User>> {
+    let users = store.read().unwrap();
+
+    Json(users.values().cloned().collect())
+}
+
+async fn create_user(
+    State(store): State<UserStore>,
+    Json(input): Json<CreateUser>,
+) -> (StatusCode, Json<User>) {
+    let mut users = store.write().unwrap();
+
+    let id = users.len() as u64 + 1;
+
+    let user = User {
+        id,
+        name: input.name,
+        email: input.email,
+    };
+
+    users.insert(id, user.clone());
+
+    (StatusCode::CREATED, Json(user))
+}
+
+async fn get_user(
+    State(store): State<UserStore>,
+    Path(id): Path<u64>,
+) -> Result<Json<User>, StatusCode> {
+    let users = store.read().unwrap();
+
+    users
+        .get(&id)
+        .cloned()
+        .map(Json)
+        .ok_or(StatusCode::NOT_FOUND)
+}
+
+fn create_app(store: UserStore) -> Router {
+    Router::new()
+        .route("/health", get(health))
+        .route("/users", get(list_users).post(create_user))
+        .route("/users/{id}", get(get_user))
+        .with_state(store)
+}
+
+#[tokio::main]
+async fn main() {
+    let store = Arc::new(RwLock::new(HashMap::new()));
+
+    let app = create_app(store);
+
+    let listener = tokio::net::TcpListener::bind("0.0.0.0:8000").await.unwrap();
+
+    println!("🚀 Module 13: OpenAPI");
+    println!("Server: http://localhost:8000");
+    println!("GET  /health");
+    println!("GET  /users");
+    println!("POST /users");
+    println!("GET  /users/{{id}}");
+
+    axum::serve(listener, app).await.unwrap();
+}
+
+/*
+Teste com:
+
+cargo r13
+
+curl -i -w '\n\n' http://localhost:8000/health
+
+curl -i -w '\n\n' http://localhost:8000/users
+
+curl -i -w '\n\n' -X POST http://localhost:8000/users \
+  -H 'Content-Type: application/json' \
+  -d '{"name":"Alice","email":"alice@example.com"}'
+
+curl -i -w '\n\n' http://localhost:8000/users/1
+*/
